@@ -128,7 +128,7 @@ Phase 2 Implementation (Commodities)
 
 Commodity Prices
 - [ ] Update to handle commodities
-- [ ] (While continuing to use ledger file format) Detect investment transactions and merge transaction lines
+- [ ] Detect investment transactions and merge transaction lines (while continuing to use ledger file format)
 - [ ] Identify commodities from ledger file
 - [ ] Fetch prices from internet and add to cache
 	- [ ] Store commodity prices in a local cache
