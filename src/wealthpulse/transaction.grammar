@@ -1,0 +1,44 @@
+
+(* Transaction *)
+
+transaction = header <newline> entries
+entries = (entry-or-note <newline>)+
+<entry-or-note> = <ws> entry | <ws> note
+
+
+(* Transaction Entry *)
+
+entry = account [<ws> amount] [<ws> value] [<ws> note] [<ws>]
+
+account = #"[^ ;\t\r\n]+"
+
+value = total-cost | unit-cost
+total-cost = "@@" <ws> amount
+unit-cost = "@" <ws> amount
+
+amount = commodity <ws?> amount-number | amount-number <ws?> commodity | amount-number
+amount-number = "-"? #"[\d,.]+"
+commodity = quoted | unquoted
+quoted = <"\""> #"[^\r\n\\\"]+" <"\"">
+unquoted = #"[^-0123456789., @;\\r\\n\\\"]+"
+
+
+(* Transaction Header *)
+
+header = date <ws> status <ws> optional-code-then-payee [note]
+<optional-code-then-payee> = code <ws> payee | !code payee
+
+date = #"\d{4}/\d{2}/\d{2}"
+status = #"[*!]"
+code = "(" #"[^);\r\n]+" ")"
+payee = #"[^;\r\n]+"
+note = ";" #"[^\r\n]*"
+
+
+(* Whitespace *)
+
+ws = #"[ \t]+"
+
+(* Newline *)
+
+newline = "\n" / "\r\n" / "\r"
