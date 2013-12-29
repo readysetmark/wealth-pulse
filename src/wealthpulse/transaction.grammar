@@ -12,15 +12,16 @@ entry = account [<ws> amount] [<ws> value] [<ws> note] [<ws>]
 
 account = #"[^ ;\t\r\n]+"
 
+(* kind of irrelevant and untested since I don't use these currently *)
 value = total-cost | unit-cost
 total-cost = "@@" <ws> amount
 unit-cost = "@" <ws> amount
 
-amount = commodity <ws?> amount-number | amount-number <ws?> commodity | amount-number
-amount-number = "-"? #"[\d,.]+"
+amount = commodity <ws?> quantity | quantity <ws?> commodity | quantity
+quantity = "-"? #"[\d,.]+"
 commodity = quoted | unquoted
-quoted = <"\""> #"[^\r\n\\\"]+" <"\"">
-unquoted = #"[^-0123456789., @;\\r\\n\\\"]+"
+<quoted> = <"\""> #"[^\r\n\\\"]+" <"\"">
+<unquoted> = #"[^-0123456789., @;\\r\\n\\\"]+"
 
 
 (* Transaction Header *)
@@ -30,9 +31,9 @@ header = date <ws> status <ws> optional-code-then-payee [note]
 
 date = #"\d{4}/\d{2}/\d{2}"
 status = #"[*!]"
-code = "(" #"[^);\r\n]+" ")"
+code = <"("> #"[^);\r\n]+" <")">
 payee = #"[^;\r\n]+"
-note = ";" #"[^\r\n]*"
+note = <";"> #"[^\r\n]*"
 
 
 (* Whitespace *)
