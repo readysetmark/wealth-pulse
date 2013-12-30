@@ -3,6 +3,14 @@
 		[clojure.string :as string]))
 
 
+(defn transform-transaction-part-deux
+	"Hm, playing with transform now..."
+	[transaction]
+	(insta/transform
+		{:transaction (fn [header entries] (map (fn [entry] (concat entry [header])) (rest entries)))}
+		transaction))
+
+
 ; Should use java.util.Date instead of java.text.SimpleDateFormat?
 
 (defn transform-transaction
