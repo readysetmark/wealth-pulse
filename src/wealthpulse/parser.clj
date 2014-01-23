@@ -5,7 +5,7 @@
 ; Journal records
 (defrecord Header [date status code payee note])
 
-(defn process-header
+(defn transform-header
 	"Transform a header from the parse tree into a Header record."
 	[[_ & values]]
 	(let [collect-values
@@ -15,17 +15,24 @@
 					(= key :status) (assoc coll :status (if (= value \!) :uncleared :cleared))
 					(= key :code) (assoc coll :code (string/trim value))
 					(= key :payee) (assoc coll :payee (string/trim value))
-					(= key :note) (assoc coll :note (string/trim value))))]
-		(reduce collect-values {} values)))
+					(= key :note) (assoc coll :note (string/trim value))))
+		  header-map (reduce collect-values {} values)]
+		(->Header (:date header-map) (:status header-map) (:code header-map) (:payee header-map) (:note header-map))))
 
-(defn process-transaction
-	"Transform a parse-tree transaction into entries."
-	[[_ header entries]]
-	(process-header header))
-	;(doall (map println [header entries])))
 
+(defn transform-entries
+	"Transform a list of parse-tree entries into entries."
+	[[_ & entries] header]
+	(map println entries))
 
 (defn transform-transaction
+	"Transform a parse-tree transaction into entries."
+	[[_ header entries]]
+	(let [header (transform-header header)]
+		(transform-entries entries header)))
+
+
+(defn transform-transactionZ
 	"Transform a parsed transaction into a more usable form."
 	[transaction]
 	(insta/transform 
