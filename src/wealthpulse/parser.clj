@@ -40,21 +40,36 @@
     {:account account :entry-type entry-type :account-lineage account-lineage}))
 
 
+(defn transform-amount
+  "Transform a parse-tree amount into an Amount record."
+  [first-val second-val]
+  (let [quantity (if (= (first first-val) :quantity)
+                   (bigdec (string/replace (first (drop 1 first-val)) "," ""))
+                   (bigdec (string/replace (first (drop 1 second-val)) "," "")))
+        commodity (cond
+                     (= (first first-val) :commodity) (string/trim (first (drop 1 first-val)))
+                     (not (nil? second-val)) (string/trim (first (drop 1 second-val)))
+                     :else nil)]
+    (->Amount quantity commodity)))
+
+
 (defn transform-entry
   "Transform a parse-tree entry into an Entry record."
-  [[_ & values]]
+  [header [_ & values]]
   (let [collect-values
-          (fn [coll [key value & rest]]
+          (fn [coll [key value opt?]]
             (cond
                (= key :account) (merge coll (transform-account value))
-               (= key :amount) (identity coll) ; need to handle quantity, quantity * commodity, commodity * quantity (and negative quantities)
-               (= key :note) (assoc coll :note (string/trim value))))]
-    (println (reduce collect-values {} values))))
+               (= key :amount) (assoc coll :amount (transform-amount value opt?))
+               (= key :note) (assoc coll :note (string/trim value))))
+        entry-map (reduce collect-values {} values)]
+    (->Entry header (:account entry-map) (:account-lineage entry-map) (:entry-type entry-map) (:amount entry-map) (:note entry-map))))
+
 
 (defn transform-entries
 	"Transform a list of parse-tree entries into entries."
 	[[_ & entries] header]
-	(map transform-entry entries))
+	(map (partial transform-entry header) entries))
 
 
 (defn transform-transaction

@@ -18,7 +18,7 @@ total-cost = "@@" <ws> amount
 unit-cost = "@" <ws> amount
 
 amount = commodity <ws?> quantity | quantity <ws?> commodity | quantity
-quantity = "-"? #"[\d,.]+"
+quantity = #"-?[\d,.]+"
 commodity = quoted | unquoted
 <quoted> = <"\""> #"[^\r\n\\\"]+" <"\"">
 <unquoted> = #"[^-0123456789., @;\\r\\n\\\"]+"
