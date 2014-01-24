@@ -23,16 +23,33 @@
 		(->Header (:date header-map) (:status header-map) (:code header-map) (:payee header-map) (:note header-map))))
 
 
+(defn transform-account
+  "Transform a parse-tree account into a map containing :account, :account-lineage, and :entry-type."
+  [value]
+  (let [first-char (first value)
+        entry-type (cond
+                      (= first-char \[) :virtual-balanced
+                      (= first-char \() :virtual-unbalanced
+                      :else :balanced)
+        account (string/trim (string/replace value #"[\[\]\(\)]" ""))
+        build-account-lineage (fn [coll val]
+                                  (if (= (count coll) 0)
+                                      (cons val coll)
+                                      (cons (clojure.string/join ":" [(first coll) val]) coll)))
+        account-lineage (reduce build-account-lineage [] (string/split account #":"))]
+    {:account account :entry-type entry-type :account-lineage account-lineage}))
+
+
 (defn transform-entry
   "Transform a parse-tree entry into an Entry record."
   [[_ & values]]
   (let [collect-values
           (fn [coll [key value & rest]]
             (cond
-               (= key :account) (assoc coll :account (string/trim value))  ; should to handle account-lineage and entry-type here
-               (= key :amount) () ; need to handle quantity, quantity * commodity, commodity * quantity (and negative quantities)
-               (= key :note) (assoc coll :note (string/trim value))))])
-  (map println values))
+               (= key :account) (merge coll (transform-account value))
+               (= key :amount) (identity coll) ; need to handle quantity, quantity * commodity, commodity * quantity (and negative quantities)
+               (= key :note) (assoc coll :note (string/trim value))))]
+    (println (reduce collect-values {} values))))
 
 (defn transform-entries
 	"Transform a list of parse-tree entries into entries."
