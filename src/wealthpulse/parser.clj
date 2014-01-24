@@ -4,12 +4,15 @@
 
 ; Journal records
 (defrecord Header [date status code payee note])
+(defrecord Amount [quantity commodity])
+(defrecord Entry [header account account-lineage entry-type amount note])
+
 
 (defn transform-header
 	"Transform a header from the parse tree into a Header record."
 	[[_ & values]]
 	(let [collect-values
-			(fn [coll [key value]] 
+			(fn [coll [key value]]
 				(cond
 					(= key :date) (assoc coll :date (.parse (java.text.SimpleDateFormat. "yyyy/MM/dd") value))
 					(= key :status) (assoc coll :status (if (= value \!) :uncleared :cleared))
@@ -20,10 +23,22 @@
 		(->Header (:date header-map) (:status header-map) (:code header-map) (:payee header-map) (:note header-map))))
 
 
+(defn transform-entry
+  "Transform a parse-tree entry into an Entry record."
+  [[_ & values]]
+  (let [collect-values
+          (fn [coll [key value & rest]]
+            (cond
+               (= key :account) (assoc coll :account (string/trim value))  ; should to handle account-lineage and entry-type here
+               (= key :amount) () ; need to handle quantity, quantity * commodity, commodity * quantity (and negative quantities)
+               (= key :note) (assoc coll :note (string/trim value))))])
+  (map println values))
+
 (defn transform-entries
 	"Transform a list of parse-tree entries into entries."
 	[[_ & entries] header]
-	(map println entries))
+	(map transform-entry entries))
+
 
 (defn transform-transaction
 	"Transform a parse-tree transaction into entries."
@@ -35,7 +50,7 @@
 (defn transform-transactionZ
 	"Transform a parsed transaction into a more usable form."
 	[transaction]
-	(insta/transform 
+	(insta/transform
 		{:date (fn [x] [:date (.parse (java.text.SimpleDateFormat. "yyyy/MM/dd") x)])
 		 :status (fn [x] [:status (if (= x \!) :uncleared :cleared)])
 		 :code (fn [x] [:code (string/trim x)])
