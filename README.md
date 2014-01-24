@@ -69,7 +69,7 @@ Phase 1 Implementation (Reporting)
 ### First Milestone
 
 Parsing Ledger File
-- [ ] Basic / optimistic parsing of ledger file
+- [x] Basic / optimistic parsing of ledger file
 - [ ] Autobalance transactions
 - [ ] Ensure transactions balance (if not autobalanced)
 

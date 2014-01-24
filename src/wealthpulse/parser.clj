@@ -20,7 +20,7 @@
 					(= key :payee) (assoc coll :payee (string/trim value))
 					(= key :note) (assoc coll :note (string/trim value))))
 		  header-map (reduce collect-values {} values)]
-		(->Header (:date header-map) (:status header-map) (:code header-map) (:payee header-map) (:note header-map))))
+		(map->Header header-map)))
 
 
 (defn transform-account
@@ -62,8 +62,8 @@
                (= key :account) (merge coll (transform-account value))
                (= key :amount) (assoc coll :amount (transform-amount value opt?))
                (= key :note) (assoc coll :note (string/trim value))))
-        entry-map (reduce collect-values {} values)]
-    (->Entry header (:account entry-map) (:account-lineage entry-map) (:entry-type entry-map) (:amount entry-map) (:note entry-map))))
+        entry-map (assoc (reduce collect-values {} values) :header header)]
+    (map->Entry entry-map)))
 
 
 (defn transform-entries
@@ -79,19 +79,6 @@
 		(transform-entries entries header)))
 
 
-(defn transform-transactionZ
-	"Transform a parsed transaction into a more usable form."
-	[transaction]
-	(insta/transform
-		{:date (fn [x] [:date (.parse (java.text.SimpleDateFormat. "yyyy/MM/dd") x)])
-		 :status (fn [x] [:status (if (= x \!) :uncleared :cleared)])
-		 :code (fn [x] [:code (string/trim x)])
-		 :payee (fn [x] [:payee (string/trim x)])
-		 :note (fn [x] [:note (string/trim x)])
-		 :quantity (fn [x] [:quantity (bigdec (string/replace x "," ""))])
-		 :transaction (fn [header entries] (map (fn [entry] (concat entry [header])) (rest entries)))}
-		transaction))
-
 
 (def parse-transaction
 	"Parses a string containing a single transaction."
@@ -104,4 +91,7 @@
 	(let [file-contents (slurp filepath)
 		  extract-transaction-regex #"(?m)^\d.+(?:\r\n|\r|\n)(?:[ \t]+.+(?:\r\n|\r|\n))+"
 		  transaction-strings (re-seq extract-transaction-regex file-contents)]
-		(map parse-transaction transaction-strings)))
+		(map (comp transform-transaction parse-transaction) transaction-strings)))
+    ;(map parse-transaction transaction-strings)))
+    ; will need to flatten the list of entries before returning.
+    ; Should I return a set, then we can use select / project?

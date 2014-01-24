@@ -3,7 +3,7 @@
 
 transaction = header <newline> entries
 entries = (entry-or-note <newline>)+
-<entry-or-note> = <ws> entry | <ws> note
+<entry-or-note> = <ws> entry | <ws> note | <ws>
 
 
 (* Transaction Entry *)
