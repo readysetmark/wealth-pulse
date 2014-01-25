@@ -2,11 +2,34 @@
 	(:require [instaparse.core :as insta]
 		[clojure.string :as string]))
 
+;
 ; Journal records
+;
+
 (defrecord Header [date status code payee note])
 (defrecord Amount [quantity commodity])
 (defrecord Entry [header account account-lineage entry-type amount note])
 
+
+
+;
+; Verify balances and autobalance
+;
+
+(defn verify-virtual-unbalanced
+  "Virtual unbalanced transactions must have an amount (since they are unbalanced)"
+  [entries]
+  (let [vu-entries (filter #(and (= (:entry-type %) :virtual-unbalanced)
+                                 (or (nil? (:amount %))
+                                     (nil? (:quantity (:amount %)))))
+                           entries)]
+    (if (> (count vu-entries) 0)
+      (println "This transaction has" (count vu-entries) "virtual unbalanced entries."))))
+
+
+;
+; Parse tree transforms
+;
 
 (defn transform-header
 	"Transform a header from the parse tree into a Header record."
@@ -79,6 +102,10 @@
 		(transform-entries entries header)))
 
 
+
+;
+; Parsing
+;
 
 (def parse-transaction
 	"Parses a string containing a single transaction."
