@@ -7,8 +7,7 @@
 ;
 
 (defrecord Header [date status code payee note])
-(defrecord Amount [quantity commodity])
-(defrecord Entry [header account account-lineage entry-type amount note])
+(defrecord Entry [header account account-lineage entry-type amount commodity note])
 
 
 
@@ -20,11 +19,28 @@
   "Virtual unbalanced transactions must have an amount (since they are unbalanced)"
   [entries]
   (let [vu-entries (filter #(and (= (:entry-type %) :virtual-unbalanced)
-                                 (or (nil? (:amount %))
-                                     (nil? (:quantity (:amount %)))))
+                                 (nil? (:amount %)))
                            entries)]
     (if (> (count vu-entries) 0)
-      (println "This transaction has" (count vu-entries) "virtual unbalanced entries."))))
+      (throw
+        (Exception. (with-out-str
+                      (print "This entry is a virtual unbalanced entry with no amount:"
+                             (first vu-entries))))))))
+
+(defn verify-balanced
+  "Generic balance checker for balanced entry types. Balanced entries should sum 0 or have only 1 amount missing (which can be auto-balanced).
+  Returns a map with :sum and :num-nil.
+  NOTE: Commodities are completely ignored right now (TODO)"
+  [entries entry-type]
+  (let [b-entries (filter #(= (:entry-type %) entry-type) entries)
+        sum (reduce (fn [sum entry]
+                      (if (nil? (:amount entry))
+                          sum
+                          (+ sum (:amount entry))))
+                    0 b-entries)
+        num-nil (count (filter #(nil? (:amount %)) b-entries))]
+    {:sum sum :num-nil num-nil}))
+
 
 
 ;
@@ -64,7 +80,7 @@
 
 
 (defn transform-amount
-  "Transform a parse-tree amount into an Amount record."
+  "Transform a parse-tree amount into a map containing :amount and :commodity."
   [first-val second-val]
   (let [quantity (if (= (first first-val) :quantity)
                    (bigdec (string/replace (first (drop 1 first-val)) "," ""))
@@ -73,7 +89,7 @@
                      (= (first first-val) :commodity) (string/trim (first (drop 1 first-val)))
                      (not (nil? second-val)) (string/trim (first (drop 1 second-val)))
                      :else nil)]
-    (->Amount quantity commodity)))
+    {:amount quantity :commodity commodity}))
 
 
 (defn transform-entry
@@ -83,7 +99,7 @@
           (fn [coll [key value opt?]]
             (cond
                (= key :account) (merge coll (transform-account value))
-               (= key :amount) (assoc coll :amount (transform-amount value opt?))
+               (= key :amount) (merge coll (transform-amount value opt?))
                (= key :note) (assoc coll :note (string/trim value))))
         entry-map (assoc (reduce collect-values {} values) :header header)]
     (map->Entry entry-map)))
