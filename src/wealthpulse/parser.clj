@@ -31,7 +31,7 @@
   "Generic balance checker for balanced entry types. Balanced entries should sum 0 or have only 1 amount missing (which can be auto-balanced).
   Returns a map with :sum and :num-nil.
   NOTE: Commodities are completely ignored right now (TODO)"
-  [entries entry-type]
+  [entry-type entries]
   (let [b-entries (filter #(= (:entry-type %) entry-type) entries)
         sum (reduce (fn [sum entry]
                       (if (nil? (:amount entry))
