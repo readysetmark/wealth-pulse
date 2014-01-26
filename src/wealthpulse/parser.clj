@@ -67,6 +67,14 @@
           :else entries)))
 
 
+(defn balance-transaction
+  "Verifies that transaction balances for all entry types and autobalances transactions if one amount is missing."
+  [entries]
+  ((comp (partial autobalance :virtual-balanced)
+         (partial autobalance :balanced)
+         verify-virtual-unbalanced)
+     entries))
+
 ;
 ; Parse tree transforms
 ;
@@ -158,6 +166,6 @@
 	(let [file-contents (slurp filepath)
 		  extract-transaction-regex #"(?m)^\d.+(?:\r\n|\r|\n)(?:[ \t]+.+(?:\r\n|\r|\n))+"
 		  transaction-strings (re-seq extract-transaction-regex file-contents)]
-		(map (comp transform-transaction parse-transaction) transaction-strings)))
+		(map (comp balance-transaction transform-transaction parse-transaction) transaction-strings)))
     ; will need to flatten the list of entries before returning.
     ; Should I return a set, then we can use select / project?

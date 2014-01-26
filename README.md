@@ -70,8 +70,9 @@ Phase 1 Implementation (Reporting)
 
 Parsing Ledger File
 - [x] Basic / optimistic parsing of ledger file
-- [ ] Autobalance transactions
-- [ ] Ensure transactions balance (if not autobalanced)
+- [x] Autobalance transactions
+- [x] Ensure transactions balance (if not autobalanced)
+- [ ] Unit tests
 
 Balance Report
 - [ ] Single balance report with parameters (filters) and generates JSON data
