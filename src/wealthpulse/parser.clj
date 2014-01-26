@@ -2,6 +2,14 @@
 	(:require [instaparse.core :as insta]
 		[clojure.string :as string]))
 
+
+; Move this out eventually
+(defn bigdec= [x y]
+  (let [diff (- x y)]
+    (and (<= diff 0.00001M) (>= diff -0.00001M))))
+
+
+
 ;
 ; Journal records
 ;
@@ -22,25 +30,41 @@
                                  (nil? (:amount %)))
                            entries)]
     (if (> (count vu-entries) 0)
-      (throw
-        (Exception. (with-out-str
-                      (print "This entry is a virtual unbalanced entry with no amount:"
-                             (first vu-entries))))))))
+        (throw
+          (Exception. (with-out-str
+                        (print "This entry is a virtual unbalanced entry with no amount:"
+                               (first vu-entries)))))
+        entries)))
 
 (defn verify-balanced
   "Generic balance checker for balanced entry types. Balanced entries should sum 0 or have only 1 amount missing (which can be auto-balanced).
-  Returns a map with :sum and :num-nil.
-  NOTE: Commodities are completely ignored right now (TODO)"
+  Returns a map with :sum, :commodity, and :num-nil.
+  NOTE: The possibility of different commodities is completely ignored right now. (TODO)"
   [entry-type entries]
   (let [b-entries (filter #(= (:entry-type %) entry-type) entries)
+        commodity (:commodity (first (filter #(not (nil? (:commodity %))) b-entries)))
         sum (reduce (fn [sum entry]
                       (if (nil? (:amount entry))
                           sum
                           (+ sum (:amount entry))))
                     0 b-entries)
         num-nil (count (filter #(nil? (:amount %)) b-entries))]
-    {:sum sum :num-nil num-nil}))
+    {:sum sum :commodity commodity :num-nil num-nil}))
 
+
+(defn autobalance
+  "Balanced entry can be autobalanced as long as there is only 1 amount missing."
+  [entry-type entries]
+  (let [stats (verify-balanced entry-type entries)]
+    (cond (> (:num-nil stats) 1) (throw (Exception. (with-out-str
+                                                      (print "This transaction is missing more than one amount for" entry-type ":" entries))))
+          (= (:num-nil stats) 1) (map #(if (nil? (:amount %))
+                                           (merge % {:amount (* -1 (:sum stats)) :commodity (:commodity stats)})
+                                           %)
+                                      entries)
+          (not (bigdec= (:sum stats) 0M)) (throw (Exception. (with-out-str
+                                                      (print "This transaction does not balance for" entry-type ". Remainder is" (:sum stats) ":" entries))))
+          :else entries)))
 
 
 ;
@@ -135,6 +159,5 @@
 		  extract-transaction-regex #"(?m)^\d.+(?:\r\n|\r|\n)(?:[ \t]+.+(?:\r\n|\r|\n))+"
 		  transaction-strings (re-seq extract-transaction-regex file-contents)]
 		(map (comp transform-transaction parse-transaction) transaction-strings)))
-    ;(map parse-transaction transaction-strings)))
     ; will need to flatten the list of entries before returning.
     ; Should I return a set, then we can use select / project?
