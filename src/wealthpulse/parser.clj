@@ -42,12 +42,13 @@
   NOTE: The possibility of different commodities is completely ignored right now. (TODO)"
   [entry-type entries]
   (let [b-entries (filter #(= (:entry-type %) entry-type) entries)
-        commodity (:commodity (first (filter #(not (nil? (:commodity %))) b-entries)))
+        commodity (some #(if (not (nil? (:commodity %))) (:commodity %)) b-entries)
         sum (reduce (fn [sum entry]
                       (if (nil? (:amount entry))
                           sum
                           (+ sum (:amount entry))))
-                    0 b-entries)
+                    0
+                    b-entries)
         num-nil (count (filter #(nil? (:amount %)) b-entries))]
     {:sum sum :commodity commodity :num-nil num-nil}))
 
@@ -115,11 +116,11 @@
   "Transform a parse-tree amount into a map containing :amount and :commodity."
   [first-val second-val]
   (let [quantity (if (= (first first-val) :quantity)
-                   (bigdec (string/replace (first (drop 1 first-val)) "," ""))
-                   (bigdec (string/replace (first (drop 1 second-val)) "," "")))
+                   (bigdec (string/replace (nth first-val 1) "," ""))
+                   (bigdec (string/replace (nth second-val 1) "," "")))
         commodity (cond
-                     (= (first first-val) :commodity) (string/trim (first (drop 1 first-val)))
-                     (not (nil? second-val)) (string/trim (first (drop 1 second-val)))
+                     (= (first first-val) :commodity) (string/trim (nth first-val 1))
+                     (not (nil? second-val)) (string/trim (nth second-val 1))
                      :else nil)]
     {:amount quantity :commodity commodity}))
 
