@@ -8,12 +8,20 @@
   (let [entry-if-account-contains (fn [entry] #(if (.contains (string/lower-case (:account entry)) (string/lower-case %)) entry))]
     (filter #(some (entry-if-account-contains %) tokens) entries)))
 
+
 (defn exclude-entries-with
   "Returns vector of entries where entries with accounts containing one of the strings in exclude-accounts-with have been removed."
   [entries tokens]
   (let [entry-if-not-account-contains (fn [entry] #(if (not (.contains (string/lower-case (:account entry)) (string/lower-case %))) entry))]
     (filter #(some (entry-if-not-account-contains %) tokens) entries)))
 
+
+(defn select-entries-within-period
+  "Returns vector of entries where entry date is within period-start and period-end."
+  [entries & {:keys [period-start period-end]}]
+  (let [satisfies-period-start? #(or (nil? period-start) (>= (.compareTo (get-in % [:header :date]) period-start) 0))
+        satisfies-period-end? #(or (nil? period-end) (<= (.compareTo (get-in % [:header :date]) period-end) 0))]
+    (filter #(and (satisfies-period-start? %) (satisfies-period-end? %)) entries)))
 
 
 (defn balance
