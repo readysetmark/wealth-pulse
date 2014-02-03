@@ -1,6 +1,6 @@
 (ns wealthpulse.parser
 	(:require [instaparse.core :as insta]
-		[clojure.string :as string]))
+		        [clojure.string :as string]))
 
 
 ; Move this out eventually
@@ -167,6 +167,4 @@
 	(let [file-contents (slurp filepath)
 		  extract-transaction-regex #"(?m)^\d.+(?:\r\n|\r|\n)(?:[ \t]+.+(?:\r\n|\r|\n))+"
 		  transaction-strings (re-seq extract-transaction-regex file-contents)]
-		(map (comp balance-transaction transform-transaction parse-transaction) transaction-strings)))
-    ; will need to flatten the list of entries before returning.
-    ; Should I return a set, then we can use select / project?
+		(flatten (map (comp balance-transaction transform-transaction parse-transaction) transaction-strings))))
