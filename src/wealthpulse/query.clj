@@ -3,7 +3,7 @@
   (:use [wealthpulse.util :only [bigdec=]]))
 
 
-; Filters
+; Filters on entries
 
 (defn account-contains?
   "Returns a function to testing whether an entry account contains a token."
@@ -50,22 +50,37 @@
                                 :period-end period-end))
 
 
-(defn filter-zero-accounts
+
+; Filters on account balances
+
+(defn exclude-zero-accounts
   "Filters a vector of [account, sum] tuples, removing all tuples where sum = 0."
-  [account-sums]
-  (filter #(not (bigdec= (nth % 1) 0M)) account-sums))
+  [account-balances]
+  (filter #(not (bigdec= (nth % 1) 0M)) account-balances))
+
+
+(defn exclude-parent-accounts-where-child-has-same-amount
+  "Filters a vector of [account, sum] tuples, removing all tuples where a sub-account tuple exists with the same amount."
+  [account-balances]
+  (let [exists-child-account-with-same-amount (fn [[account, amount]]
+                                                  (not (some (fn [[other-account, other-amount]]
+                                                               (and (.startsWith other-account account)
+                                                                    (> (.length other-account) (.length account))
+                                                                    (bigdec= other-amount amount)))
+                                                             account-balances)))]
+    (filter exists-child-account-with-same-amount account-balances)))
 
 
 
 ; Calculations
 
-(defn sum-by-account
+(defn calc-account-balances
   "Returns a vector of [account, sum] tuples for all accounts in the account lineage for each entry in entries."
   [entries]
   (let [add-amount-for-accounts (fn [entry] (fn [coll account] (assoc coll account (+ (get coll account 0M) (:amount entry)))))
         for-each-account-in-lineage-add-amount (fn [coll entry] (reduce (add-amount-for-accounts entry) coll (:account-lineage entry)))
-        account-sums (reduce for-each-account-in-lineage-add-amount {} entries)]
-    (map #(identity [% (account-sums %)]) (keys account-sums))))
+        account-balances (reduce for-each-account-in-lineage-add-amount {} entries)]
+    (map #(identity [% (account-balances %)]) (keys account-balances))))
 
 
 
@@ -83,11 +98,11 @@
     :period-end :: select entries up to and including this date."
   [journal {:keys [accounts-with exclude-accounts-with period-start period-end] :as filters}]
   (let [filtered-entries (filter-entries journal filters)
-        account-sums (-> filtered-entries
-                         sum-by-account
-                         filter-zero-accounts)]
-    account-sums)
-  ;filter parent accounts where amount is the same as single child
+        account-balances (-> filtered-entries
+                             calc-account-balances
+                             exclude-zero-accounts
+                             exclude-parent-accounts-where-child-has-same-amount)]
+    account-balances)
   ;calculate total balance
   ;return amounts & total balance
   )
