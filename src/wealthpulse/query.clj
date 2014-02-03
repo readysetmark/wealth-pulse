@@ -1,6 +1,9 @@
 (ns wealthpulse.query
-  (:require [clojure.string :as string]))
+  (:require [clojure.string :as string])
+  (:use [wealthpulse.util :only [bigdec=]]))
 
+
+; Filters
 
 (defn account-contains?
   "Returns a function to testing whether an entry account contains a token."
@@ -47,6 +50,29 @@
                                 :period-end period-end))
 
 
+(defn filter-zero-accounts
+  "Filters a vector of [account, sum] tuples, removing all tuples where sum = 0."
+  [account-sums]
+  (filter #(not (bigdec= (nth % 1) 0M)) account-sums))
+
+
+
+; Calculations
+
+(defn sum-by-account
+  "Returns a vector of [account, sum] tuples for all accounts in the account lineage for each entry in entries."
+  [entries]
+  (let [add-amount-for-accounts (fn [entry] (fn [coll account] (assoc coll account (+ (get coll account 0M) (:amount entry)))))
+        for-each-account-in-lineage-add-amount (fn [coll entry] (reduce (add-amount-for-accounts entry) coll (:account-lineage entry)))
+        account-sums (reduce for-each-account-in-lineage-add-amount {} entries)]
+    (map #(identity [% (account-sums %)]) (keys account-sums))))
+
+
+
+
+
+; Queries
+
 (defn balance
   "Returns a tuple of [account-balances, total-balance] that match the filters, where
   account-balances is a vector of [account, amount] tuples.
@@ -56,10 +82,11 @@
     :period-start :: select entries on or after this date.
     :period-end :: select entries up to and including this date."
   [journal {:keys [accounts-with exclude-accounts-with period-start period-end] :as filters}]
-  (let [filtered-entries (filter-entries journal filters)])
-  ;filter entries
-  ;sum entries by account
-  ;discard accounts with 0 balance
+  (let [filtered-entries (filter-entries journal filters)
+        account-sums (-> filtered-entries
+                         sum-by-account
+                         filter-zero-accounts)]
+    account-sums)
   ;filter parent accounts where amount is the same as single child
   ;calculate total balance
   ;return amounts & total balance

@@ -1,13 +1,7 @@
 (ns wealthpulse.parser
 	(:require [instaparse.core :as insta]
-		        [clojure.string :as string]))
-
-
-; Move this out eventually
-(defn bigdec= [x y]
-  (let [diff (- x y)]
-    (and (<= diff 0.00001M) (>= diff -0.00001M))))
-
+		        [clojure.string :as string])
+  (:use [wealthpulse.util :only [bigdec=]]))
 
 
 ;
