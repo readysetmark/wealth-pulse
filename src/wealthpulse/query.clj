@@ -2,18 +2,22 @@
   (:require [clojure.string :as string]))
 
 
+(defn account-contains?
+  "Returns a function to testing whether an entry account contains a token."
+  [entry]
+  #(.contains (string/lower-case (:account entry)) (string/lower-case %)))
+
+
 (defn select-entries-with
   "Returns vector of entries where account contains one of the strings in accounts-with."
   [entries tokens]
-  (let [entry-if-account-contains (fn [entry] #(if (.contains (string/lower-case (:account entry)) (string/lower-case %)) entry))]
-    (filter #(some (entry-if-account-contains %) tokens) entries)))
+  (filter #(some (account-contains? %) tokens) entries))
 
 
 (defn exclude-entries-with
   "Returns vector of entries where entries with accounts containing one of the strings in exclude-accounts-with have been removed."
   [entries tokens]
-  (let [entry-if-not-account-contains (fn [entry] #(if (not (.contains (string/lower-case (:account entry)) (string/lower-case %))) entry))]
-    (filter #(some (entry-if-not-account-contains %) tokens) entries)))
+  (filter #(not (some (account-contains? %) tokens)) entries))
 
 
 (defn select-entries-within-period
