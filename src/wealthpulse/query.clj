@@ -54,34 +54,39 @@
 ; Filters on account balances
 
 (defn exclude-zero-accounts
-  "Filters a vector of [account, sum] tuples, removing all tuples where sum = 0."
+  "Filters a vector of [account, balance] tuples, removing all tuples where balance = 0."
   [account-balances]
   (filter #(not (bigdec= (nth % 1) 0M)) account-balances))
 
 
-(defn exclude-parent-accounts-where-child-has-same-amount
-  "Filters a vector of [account, sum] tuples, removing all tuples where a sub-account tuple exists with the same amount."
+(defn exclude-parent-accounts-where-child-has-same-balance
+  "Filters a vector of [account, balance] tuples, removing all tuples where a sub-account tuple exists with the same amount."
   [account-balances]
-  (let [exists-child-account-with-same-amount (fn [[account, amount]]
-                                                  (not (some (fn [[other-account, other-amount]]
+  (let [exists-child-account-with-same-balance (fn [[account, balance]]
+                                                  (not (some (fn [[other-account, other-balance]]
                                                                (and (.startsWith other-account account)
                                                                     (> (.length other-account) (.length account))
-                                                                    (bigdec= other-amount amount)))
+                                                                    (bigdec= other-balance balance)))
                                                              account-balances)))]
-    (filter exists-child-account-with-same-amount account-balances)))
+    (filter exists-child-account-with-same-balance account-balances)))
 
 
 
 ; Calculations
 
 (defn calc-account-balances
-  "Returns a vector of [account, sum] tuples for all accounts in the account lineage for each entry in entries."
+  "Returns a vector of [account, balance] tuples for all accounts in the account lineage for each entry in entries."
   [entries]
   (let [add-amount-for-accounts (fn [entry] (fn [coll account] (assoc coll account (+ (get coll account 0M) (:amount entry)))))
         for-each-account-in-lineage-add-amount (fn [coll entry] (reduce (add-amount-for-accounts entry) coll (:account-lineage entry)))
         account-balances (reduce for-each-account-in-lineage-add-amount {} entries)]
     (map #(identity [% (account-balances %)]) (keys account-balances))))
 
+
+(defn calc-total-balance
+  "Returns a total balance from a vector entries."
+  [entries]
+  (reduce (fn [total entry] (+ total (:amount entry))) 0M entries))
 
 
 
@@ -101,11 +106,6 @@
         account-balances (-> filtered-entries
                              calc-account-balances
                              exclude-zero-accounts
-                             exclude-parent-accounts-where-child-has-same-amount)]
-    account-balances)
-  ;calculate total balance
-  ;return amounts & total balance
-  )
-
-
-;wealthpulse.core=> (clojure.set/project (clojure.set/select #(.contains (clojure.string/lower-case (:account %)) "assets") (set fjournal)) [:account :amount :commodity])
+                             exclude-parent-accounts-where-child-has-same-balance)
+        total-balance (calc-total-balance filtered-entries)]
+    [account-balances, total-balance]))
