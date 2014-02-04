@@ -1,8 +1,8 @@
 <section>
 	<header class="page-header">
 		<h1>
-			{{balance.Title}}<br>
-			<small>{{balance.Subtitle}}</small>
+			{{balance.title}}<br>
+			<small>{{balance.subtitle}}</small>
 		</h1>
 	</header>
 	<section class="span4">
@@ -11,9 +11,9 @@
 				<tr><th>Balance</th><th>Account</th></tr>
 			</thead>
 			<tbody>
-				<tr ng-repeat="row in balance.AccountBalances" class="{{row.RowClass}}">
-					<td class="currency {{row.BalanceClass}}">{{row.Balance}}</td>
-					<td style="{{row.AccountStyle}}"><a href="/TODO_register_link">{{row.Account}}</a></td>
+				<tr ng-repeat="row in balance.balances" class="{{row.['row-class']}}">
+					<td class="currency {{row.['balance-class']}}">{{row.balance}}</td>
+					<td style="{{row.['account-style']}}"><a href="/TODO_register_link">{{row.account}}</a></td>
 				</tr>
 			</tbody>
 		</table>
