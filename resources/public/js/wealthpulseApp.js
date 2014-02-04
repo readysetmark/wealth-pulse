@@ -3,12 +3,12 @@ angular.module('wealthpulseApp', ['ngRoute', 'wpLineChart'])
 		$routeProvider
 			.when('/balance', {
 				controller: BalanceCtrl,
-				templateUrl: '/content/partials/balance.html',
+				templateUrl: '/partials/balance.html',
 				resolve: BalanceCtrl.resolve
 			})
 			.when('/networth', {
 				controller: NetWorthCtrl,
-				templateUrl: '/content/partials/linechart.html',
+				templateUrl: '/partials/linechart.html',
 				resolve: NetWorthCtrl.resolve
 			})
 			.otherwise({
@@ -33,7 +33,7 @@ BalanceCtrl.resolve = {
 			options = {params: query_params};
 		}
 
-		return $http.get('/api/balance.json', options);
+		return $http.get('/api/balance', options);
 	}
 }
 
@@ -50,14 +50,14 @@ function NetWorthCtrl($scope, response) {
 
 NetWorthCtrl.resolve = {
 	response: function($q, $http) {
-		return $http.get('/api/networth.json');
+		return $http.get('/api/networth');
 	}
 };
 
 
 function NavCtrl($scope, $http) {
-	$http.get('/api/nav.json').success(function(data) {
-		$scope.reports = data;	
+	$http.get('/api/nav').success(function(data) {
+		$scope.reports = data;
 	});
 }
 
