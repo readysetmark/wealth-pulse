@@ -11,9 +11,9 @@
 				<tr><th>Balance</th><th>Account</th></tr>
 			</thead>
 			<tbody>
-				<tr ng-repeat="row in balance.balances" class="{{row.['row-class']}}">
-					<td class="currency {{row.['balance-class']}}">{{row.balance}}</td>
-					<td style="{{row.['account-style']}}"><a href="/TODO_register_link">{{row.account}}</a></td>
+				<tr ng-repeat="row in balance.balances" class="{{row.rowclass}}">
+					<td class="currency {{row.balanceclass}}">{{row.balance}}</td>
+					<td style="{{row.accountstyle}}"><a href="/TODO_register_link">{{row.account}}</a></td>
 				</tr>
 			</tbody>
 		</table>
