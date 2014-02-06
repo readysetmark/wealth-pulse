@@ -87,7 +87,7 @@ Net Worth Chart
 - [ ] Report to generate JSON data for a networth chart
 
 Single Page Web App
-- [ ] Serve static files (css/js)
+- [x] Serve static files (css/js)
 - [ ] "Static" links for balance sheet, net worth, current income, previous income
 
 
