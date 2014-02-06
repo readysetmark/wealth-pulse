@@ -23,6 +23,10 @@ How to Run
 
 TBD
 
+Development:
+
+lein ring server-headless
+
 
 Command Bar Supported Commands
 ------------------------------
