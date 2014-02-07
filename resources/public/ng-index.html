@@ -1,14 +1,16 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="wealthpulseApp">
 <head>
 	<title>Wealth Pulse</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" href="css/wealthpulse.css">
 	<link rel="stylesheet" href="lib/bootstrap/css/bootstrap.min.css" media="screen">
-    <script src="lib/react-0.8.0/react.js"></script>
+	<script src="lib/angular-1.2.1/angular.js"></script>
+	<script src="lib/angular-1.2.1/angular-route.js"></script>
 	<script src="lib/bootstrap/js/bootstrap.min.js"></script>
 	<script src="lib/d3/d3.v3.min.js"></script>
-    <script src="js/wealthpulse.js"></script>
+	<script src="js/wealthpulseApp.js"></script>
+	<script src="js/wpLineChart.js"></script>
 </head>
 <body>
 	<!-- Navbar -->
@@ -17,8 +19,8 @@
 			<div class="container-fluid">
 				<a class="brand" href="/">Wealth Pulse</a>
 
-				<form class="navbar-form pull-right" name="command">
-					<input type="text" name="cmd" class="span8" placeholder="Command">
+				<form ng-controller="CommandCtrl" ng-submit="submit()" class="navbar-form pull-right" name="command">
+					<input type="text" name="cmd" class="span8" placeholder="Command" ng-model="cmd">
 					<button type="submit" class="btn btn-primary">Submit</button>
 				</form>
 			</div>
@@ -29,8 +31,7 @@
 	<div class="container-fluid">
 		<div class="row-fluid">
 			<!-- Sidebar Navigation -->
-			<nav id="sidebar" class="span2">
-                <!-- rendered by react
+			<nav class="span2">
 				<div class="well" style="padding: 8px 0;">
 					<ul ng-controller="NavCtrl" class="nav nav-list">
 						<li class="nav-header">Reports</li>
@@ -43,26 +44,13 @@
 						</li>
 					</ul>
 				</div>
-                -->
 			</nav>
 
 			<!-- Report -->
 			<div class="span10">
-				<section id="main"></section>
+				<section ng-view></section>
 			</div>
 		</div>
 	</div>
-
-
-    <script type="text/javascript">
-        console.log("hello");
-
-        React.renderComponent(
-            NavBox({reports: reports}),
-            document.getElementById('sidebar')
-        );
-
-        console.log("goodbye");
-    </script>
 </body>
 </html>
