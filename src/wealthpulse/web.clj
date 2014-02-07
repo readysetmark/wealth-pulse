@@ -49,10 +49,11 @@
   [journal]
   (routes
     (GET "/nav" [] (response/response
-                      [{:title "Balance Sheet" :url "#/balance?parameters=assets liabilities :exclude units :title Balance Sheet"}
-                       {:title "Net Worth" :url "#/networth"}
-                       {:title "Income Statement - Current Month" :url "#/balance?parameters=income expenses :period this month :title Income Statement"}
-                       {:title "Income Statement - Previous Month" :url "#/balance?parameters=income expenses :period last month :title Income Statement"}]))
+                      {:reports [{:title "Balance Sheet" :url "#/balance?parameters=assets liabilities :exclude units :title Balance Sheet"}
+                                 {:title "Net Worth" :url "#/networth"}
+                                 {:title "Income Statement - Current Month" :url "#/balance?parameters=income expenses :period this month :title Income Statement"}
+                                 {:title "Income Statement - Previous Month" :url "#/balance?parameters=income expenses :period last month :title Income Statement"}]
+                       :payees []}))
     (GET "/balance" [] (response/response
                           {:title "Balance Sheet"
                            :subtitle "As of today"

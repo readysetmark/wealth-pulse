@@ -27,17 +27,6 @@ TODO:
 
 */
 
-var reports = [
-  {title: "Balance Sheet", url: "#/balance?parameters=assets liabilities :exclude units :title Balance Sheet"},
-  {title: "Net Worth", url: "#/networth"},
-  {title: "Income Statement - Current Month", url: "#/balance?parameters=income expenses :period this month :title Income Statement"},
-  {title: "Income Statement - Previous Month", url: "#/balance?parameters=income expenses :period last month :title Income Statement"}
-];
-
-var payees = [
-  {name: "Analee", url: "#/register?parameters=analee", amountClass: "positive", amount: "$180.00"}
-];
-
 
 var Report = React.createClass({
   render: function() {
@@ -56,20 +45,36 @@ var Payee = React.createClass({
 
 
 var NavBox = React.createClass({
+  getInitialState: function() {
+    return {reports: [], payees: []};
+  },
+  componentWillMount: function() {
+    $.ajax({
+      url: 'api/nav',
+      dataType: 'json',
+      success: function(data) {
+        this.setState({reports: data.reports,
+                       payees: data.payees});
+      }.bind(this),
+      error: function(xhr, status, err) {
+        console.error("api/nav", status, err.toString());
+      }.bind(this)
+    });
+  },
   render: function() {
     var report_nodes = [];
     var payee_nodes = [];
     var i = 0;
 
-    for (i = 0; i < this.props.reports.length; i++) {
-      var report = this.props.reports[i];
+    for (i = 0; i < this.state.reports.length; i++) {
+      var report = this.state.reports[i];
       report_nodes.push(Report({url: report.url,
                                 title: report.title,
                                 key: report.title}));
     }
 
-    for (i = 0; i < this.props.payees.length; i++) {
-      var payee = this.props.payees[i];
+    for (i = 0; i < this.state.payees.length; i++) {
+      var payee = this.state.payees[i];
       payee_nodes.push(Payee({className: payee.class,
                                url: payee.url,
                                name: payee.name,
@@ -78,7 +83,7 @@ var NavBox = React.createClass({
                                key: payee.name}));
     }
 
-    var top = React.DOM.div({
+    var div = React.DOM.div({
       className: "well",
       style: {
         padding: "8px 0"
@@ -91,6 +96,6 @@ var NavBox = React.createClass({
       payee_nodes
       )
     );
-    return top;
+    return div;
   }
 });
