@@ -2,18 +2,6 @@
 
 TODO:
 
-- NavBox
-  - Report
-      @className
-      @url
-      @title
-  - Payee
-      @className
-      @url
-      @name
-      @amountClass
-      @amount
-
 - Balance
     @title
     @subtitle
@@ -28,6 +16,10 @@ TODO:
 */
 
 
+// Report
+//   @className
+//   @url
+//   @title
 var Report = React.createClass({
   render: function() {
     return React.DOM.li({className: this.props.className},
@@ -36,6 +28,12 @@ var Report = React.createClass({
 });
 
 
+// Payee
+//   @className
+//   @url
+//   @name
+//   @amountClass
+//   @amount
 var Payee = React.createClass({
   render: function() {
     return React.DOM.li({className: this.props.className},
@@ -44,6 +42,7 @@ var Payee = React.createClass({
 });
 
 
+// NavBox
 var NavBox = React.createClass({
   getInitialState: function() {
     return {reports: [], payees: []};
@@ -99,3 +98,14 @@ var NavBox = React.createClass({
     return div;
   }
 });
+
+
+
+console.log("hello");
+
+React.renderComponent(
+  NavBox({}),
+  document.getElementById('sidebar')
+);
+
+console.log("goodbye");
