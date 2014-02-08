@@ -37,7 +37,7 @@
                                           :account account-display
                                           :balance (format-balance balance)
                                           :balanceClass (string/lower-case (first (string/split account #":")))
-                                          :accountStyle {:padding-left (str padding "px;")}}))
+                                          :accountStyle {:padding-left (str padding "px")}}))
                                      sorted-balances))]
     (conj annotated-balances {:key "Total"
                               :account ""
@@ -51,10 +51,10 @@
   [journal]
   (routes
     (GET "/nav" [] (response/response
-                      {:reports [{:title "Balance Sheet" :url "#/balance?parameters=assets liabilities :exclude units :title Balance Sheet"}
-                                 {:title "Net Worth" :url "#/networth"}
-                                 {:title "Income Statement - Current Month" :url "#/balance?parameters=income expenses :period this month :title Income Statement"}
-                                 {:title "Income Statement - Previous Month" :url "#/balance?parameters=income expenses :period last month :title Income Statement"}]
+                      {:reports [{:key "Balance Sheet" :title "Balance Sheet" :url "#/balance?parameters=assets liabilities :exclude units :title Balance Sheet"}
+                                 {:key "Net Worth" :title "Net Worth" :url "#/networth"}
+                                 {:key "Income Statement - Current Month" :title "Income Statement - Current Month" :url "#/balance?parameters=income expenses :period this month :title Income Statement"}
+                                 {:key "Income Statement - Previous Month" :title "Income Statement - Previous Month" :url "#/balance?parameters=income expenses :period last month :title Income Statement"}]
                        :payees []}))
     (GET "/balance" [] (response/response
                           {:title "Balance Sheet"

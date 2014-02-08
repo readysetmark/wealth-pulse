@@ -38,8 +38,7 @@ var NavBox = React.createClass({
       url: 'api/nav',
       dataType: 'json',
       success: function(data) {
-        this.setState({reports: data.reports,
-                       payees: data.payees});
+        this.setState(data);
       }.bind(this),
       error: function(xhr, status, err) {
         console.error("api/nav", status, err.toString());
@@ -53,9 +52,7 @@ var NavBox = React.createClass({
 
     for (i = 0; i < this.state.reports.length; i++) {
       var report = this.state.reports[i];
-      report_nodes.push(Report({url: report.url,
-                                title: report.title,
-                                key: report.title}));
+      report_nodes.push(Report(report));
     }
 
     for (i = 0; i < this.state.payees.length; i++) {
