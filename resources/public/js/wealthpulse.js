@@ -152,6 +152,28 @@ var BalanceReport = React.createClass({
 });
 
 
+/*****
+  Routes
+*****/
+
+var WealthPulseRouter = Backbone.Router.extend({
+  routes: {
+    '': 'balance',
+    'balance': 'balance',
+    'balance?*query': 'balance',
+    'networth': 'networth'
+  },
+  balance: function (query) {
+    console.log('balance with query='+ query);
+  },
+  'networth': function () {
+    console.log('networth');
+  }
+});
+
+var router = new WealthPulseRouter();
+Backbone.history.start();
+
 
 /*****
   Initialization
