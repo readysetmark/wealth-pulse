@@ -6,8 +6,33 @@
             [ring.middleware.json :as json]
             [ring.util.response :as response]
             [wealthpulse.parser :as parser]
-            [wealthpulse.query :as query])
+            [wealthpulse.query :as query]
+            [wealthpulse.util :as util])
   (:import [java.text NumberFormat]))
+
+
+
+; TODO: Is this the best place for this?
+(defn calculate-period
+  "Calculate period based on period, since, and upto parameters."
+  [{:keys [period since upto]}]
+  (let [first-non-nil (fn [coll] (some #(if (not (nil? %)) %) coll))
+        date-parser (java.text.SimpleDateFormat. "yyyy/MM/dd")
+        lowercase-period (if (not (nil? period)) (string/lower-case period))
+        since-date (if (not (nil? since)) (.parse date-parser since))
+        upto-date (if (not (nil? upto)) (.parse date-parser upto))
+        [period-start, period-end] (cond (= lowercase-period "this month")
+                                           (let [this-month (java.util.Calendar/getInstance)]
+                                             [(util/get-first-of-month this-month)
+                                              (util/get-last-of-month this-month)])
+                                         (= lowercase-period "last month")
+                                           (let [last-month (doto (java.util.Calendar/getInstance)
+                                                              (.add  java.util.Calendar/MONTH -1))]
+                                             [(util/get-first-of-month last-month)
+                                              (util/get-last-of-month last-month)])
+                                         :else [nil nil])]
+    [(first-non-nil [period-start since-date])
+     (first-non-nil [period-end upto-date])]))
 
 
 ; TODO: this is here temporarily and should be moved somewhere more appropriate
@@ -51,21 +76,22 @@
     accountsWith
     excludeAccountsWith
     period
-    periodStart
-    periodEnd
+    since
+    upto
     title"
   [journal params]
   (let [date-formatter (java.text.SimpleDateFormat. "MMMM d, yyyy")
-        period-start (if (contains? params :periodStart) (.parse (java.text.SimpleDateFormat. "yyyy/MM/dd") (:periodStart params)))
-        period-end (if (contains? params :periodEnd) (.parse (java.text.SimpleDateFormat. "yyyy/MM/dd") (:periodEnd params)))
+        [period-start period-end] (calculate-period params)
+        accounts-with (if (contains? params :accountsWith) (string/split (:accountsWith params) #" "))
+        exclude-accounts-with (if (contains? params :excludeAccountsWith) (string/split (:excludeAccountsWith params) #" "))
         subtitle (cond (and period-start period-end) (str "For the period of " (.format date-formatter period-start) " to " (.format date-formatter period-end))
                        (not (nil? period-start)) (str "Since " (.format date-formatter period-start))
                        (not (nil? period-end)) (str "Up to " (.format date-formatter period-end))
                        :else (str "As of " (.format date-formatter (java.util.Date.))))]
     {:title (get params :title "Balance Sheet")
      :subtitle subtitle
-     :balances (annotate-balances (query/balance journal {:accounts-with (string/split (:accountsWith params) #" ")
-                                                          :exclude-accounts-with (string/split (:excludeAccountsWith params) #" ")
+     :balances (annotate-balances (query/balance journal {:accounts-with accounts-with
+                                                          :exclude-accounts-with exclude-accounts-with
                                                           :period-start period-start
                                                           :period-end period-end}))}))
 
