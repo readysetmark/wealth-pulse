@@ -113,20 +113,35 @@ var BalanceReportRow = React.createClass({
 //   @subtitle
 //   @balances
 var BalanceReport = React.createClass({
+  getInitialState: function() {
+    return {title: "", subtitle: "", balances: []};
+  },
+  componentWillMount: function() {
+    $.ajax({
+      url: 'api/balance',
+      dataType: 'json',
+      success: function(data) {
+        this.setState(data);
+      }.bind(this),
+      error: function(xhr, status, err) {
+        console.error("api/balance", status, err.toString());
+      }.bind(this)
+    });
+  },
   render: function() {
     var table_rows = [];
     var i = 0;
 
-    for (i = 0; i < this.props.balances.length; i++) {
-      var balance = this.props.balances[i];
+    for (i = 0; i < this.state.balances.length; i++) {
+      var balance = this.state.balances[i];
       table_rows.push(BalanceReportRow(balance));
     }
 
     var header = React.DOM.header({className: "page-header"},
                                    React.DOM.h1(null,
-                                                [this.props.title,
+                                                [this.state.title,
                                                  React.DOM.br(),
-                                                 React.DOM.small(null, this.props.subtitle)]));
+                                                 React.DOM.small(null, this.state.subtitle)]));
     var body = React.DOM.section({className: "span4"},
                                  React.DOM.table({className: "table table-hover table-condensed"},
                                                  [React.DOM.thead(null,
@@ -153,7 +168,7 @@ React.renderComponent(
 );
 
 React.renderComponent(
-  BalanceReport({"title":"Balance Sheet","subtitle":"As of today","balances":[{"key":"Assets","account":"Assets","balance":"$401,616.66","balanceClass":"assets","accountStyle":{"padding-left":"8px;"}},{"key":"Assets:Home:Brixton","account":"Home:Brixton","balance":"$350,000.00","balanceClass":"assets","accountStyle":{"padding-left":"28px;"}},{"key":"Assets:Investments:BookValue","account":"Investments:BookValue","balance":"$39,603.32","balanceClass":"assets","accountStyle":{"padding-left":"28px;"}},{"key":"Assets:Investments:BookValue:RRSP:TD","account":"RRSP:TD","balance":"$39,091.58","balanceClass":"assets","accountStyle":{"padding-left":"48px;"}},{"key":"Assets:Investments:BookValue:RRSP:TD:CanadianBondIndex","account":"CanadianBondIndex","balance":"$10,236.12","balanceClass":"assets","accountStyle":{"padding-left":"68px;"}},{"key":"Assets:Investments:BookValue:RRSP:TD:CanadianEquityIndex","account":"CanadianEquityIndex","balance":"$10,513.57","balanceClass":"assets","accountStyle":{"padding-left":"68px;"}},{"key":"Assets:Investments:BookValue:RRSP:TD:InternationalEquityIndex","account":"InternationalEquityIndex","balance":"$9,673.65","balanceClass":"assets","accountStyle":{"padding-left":"68px;"}},{"key":"Assets:Investments:BookValue:RRSP:TD:USEquityIndex","account":"USEquityIndex","balance":"$8,668.24","balanceClass":"assets","accountStyle":{"padding-left":"68px;"}},{"key":"Assets:Investments:BookValue:Regular:Royal:CanadianMoneyMarket","account":"Regular:Royal:CanadianMoneyMarket","balance":"$511.74","balanceClass":"assets","accountStyle":{"padding-left":"48px;"}},{"key":"Assets:Receivables:Analee","account":"Receivables:Analee","balance":"$180.00","balanceClass":"assets","accountStyle":{"padding-left":"28px;"}},{"key":"Assets:Savings","account":"Savings","balance":"$11,833.34","balanceClass":"assets","accountStyle":{"padding-left":"28px;"}},{"key":"Assets:Savings:ING","account":"ING","balance":"$5,005.88","balanceClass":"assets","accountStyle":{"padding-left":"48px;"}},{"key":"Assets:Savings:INGTaxFree","account":"INGTaxFree","balance":"$5,327.46","balanceClass":"assets","accountStyle":{"padding-left":"48px;"}},{"key":"Assets:Savings:Royal","account":"Royal","balance":"$1,500.00","balanceClass":"assets","accountStyle":{"padding-left":"48px;"}},{"key":"Liabilities","account":"Liabilities","balance":"($275,381.44)","balanceClass":"liabilities","accountStyle":{"padding-left":"8px;"}},{"key":"Liabilities:Credit:Visa","account":"Credit:Visa","balance":"($151.38)","balanceClass":"liabilities","accountStyle":{"padding-left":"28px;"}},{"key":"Liabilities:Mortgage:Brixton","account":"Mortgage:Brixton","balance":"($275,215.31)","balanceClass":"liabilities","accountStyle":{"padding-left":"28px;"}},{"key":"Liabilities:Payables:MomDad","account":"Payables:MomDad","balance":"($14.75)","balanceClass":"liabilities","accountStyle":{"padding-left":"28px;"}},{"key":"Total","account":"","balance":"$126,235.22","rowClass":"grand_total"}]}),
+  BalanceReport({}),
   document.getElementById('report')
 );
 
