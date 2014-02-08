@@ -33,14 +33,16 @@
         annotated-balances (vec (map (fn [[account balance]]
                                        (let [[account-display indent] (get-account-display account)
                                              padding (+ padding-left-base (* indent indent-padding))]
-                                         {:account account-display
+                                         {:key account
+                                          :account account-display
                                           :balance (format-balance balance)
-                                          :balanceclass (string/lower-case (first (string/split account #":")))
-                                          :accountstyle (str "padding-left: " padding "px;")}))
+                                          :balanceClass (string/lower-case (first (string/split account #":")))
+                                          :accountStyle {:padding-left (str padding "px;")}}))
                                      sorted-balances))]
-    (conj annotated-balances {:account ""
+    (conj annotated-balances {:key "Total"
+                              :account ""
                               :balance (format-balance total)
-                              :rowclass "grand_total"})))
+                              :rowClass "grand_total"})))
 
 
 
