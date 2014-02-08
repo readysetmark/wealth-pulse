@@ -115,7 +115,7 @@ var BalanceReport = React.createClass({
   },
   componentWillMount: function() {
     $.ajax({
-      url: 'api/balance',
+      url: 'api/balance?accountsWith=assets+liabilities&excludeAccountsWith=units&title=Balance+Sheet',
       dataType: 'json',
       success: function(data) {
         this.setState(data);

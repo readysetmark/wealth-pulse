@@ -45,22 +45,43 @@
                               :rowClass "grand_total"})))
 
 
+; TODO: I think eventually most of this should be moved to the front end (title, subtitle do not belong here)
+(defn handle-balance
+  "Handle Balance api request. Possible parameters:
+    accountsWith
+    excludeAccountsWith
+    period
+    periodStart
+    periodEnd
+    title"
+  [journal params]
+  (let [date-formatter (java.text.SimpleDateFormat. "MMMM d, yyyy")
+        period-start (if (contains? params :periodStart) (.parse (java.text.SimpleDateFormat. "yyyy/MM/dd") (:periodStart params)))
+        period-end (if (contains? params :periodEnd) (.parse (java.text.SimpleDateFormat. "yyyy/MM/dd") (:periodEnd params)))
+        subtitle (cond (and period-start period-end) (str "For the period of " (.format date-formatter period-start) " to " (.format date-formatter period-end))
+                       (not (nil? period-start)) (str "Since " (.format date-formatter period-start))
+                       (not (nil? period-end)) (str "Up to " (.format date-formatter period-end))
+                       :else (str "As of " (.format date-formatter (java.util.Date.))))]
+    {:title (get params :title "Balance Sheet")
+     :subtitle subtitle
+     :balances (annotate-balances (query/balance journal {:accounts-with (string/split (:accountsWith params) #" ")
+                                                          :exclude-accounts-with (string/split (:excludeAccountsWith params) #" ")
+                                                          :period-start period-start
+                                                          :period-end period-end}))}))
+
 
 (defn api-routes
   "Define API routes."
   [journal]
   (routes
     (GET "/nav" [] (response/response
-                      {:reports [{:key "Balance Sheet" :title "Balance Sheet" :url "#/balance?parameters=assets liabilities :exclude units :title Balance Sheet"}
+                      {:reports [{:key "Balance Sheet" :title "Balance Sheet" :url "#/balance?accountsWith=assets+liabilities&excludeAccountsWith=units&title=Balance+Sheet"}
                                  {:key "Net Worth" :title "Net Worth" :url "#/networth"}
-                                 {:key "Income Statement - Current Month" :title "Income Statement - Current Month" :url "#/balance?parameters=income expenses :period this month :title Income Statement"}
-                                 {:key "Income Statement - Previous Month" :title "Income Statement - Previous Month" :url "#/balance?parameters=income expenses :period last month :title Income Statement"}]
+                                 {:key "Income Statement - Current Month" :title "Income Statement - Current Month" :url "#/balance?accountsWith=income+expenses&period=this+month&title=Income+Statement"}
+                                 {:key "Income Statement - Previous Month" :title "Income Statement - Previous Month" :url "#/balance?accountsWith=income+expenses&period=last+month&title=Income+Statement"}]
                        :payees []}))
-    (GET "/balance" [] (response/response
-                          {:title "Balance Sheet"
-                           :subtitle "As of today"
-                           :balances (annotate-balances (query/balance journal {:accounts-with ["assets" "liabilities"] :exclude-accounts-with ["units"]}))}))
-    (GET "/networth" [] "...")))
+    (GET "/balance" [& params] (response/response (handle-balance journal params)))
+    (GET "/networth" [& params] (get params :history "No history parameter supplied."))))
 
 
 (defn app-routes

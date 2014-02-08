@@ -81,7 +81,7 @@ Parsing Ledger File
 Balance Report
 - [ ] Single balance report with parameters (filters) and generates JSON data
   - [x] Balance report query
-  - [ ] Balance report view
+  - [x] Balance report view
 
 Net Worth Chart
 - [ ] Report to generate JSON data for a networth chart
