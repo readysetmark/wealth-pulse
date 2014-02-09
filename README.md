@@ -79,7 +79,7 @@ Parsing Ledger File
 - [ ] Unit tests
 
 Balance Report
-- [ ] Single balance report with parameters (filters) and generates JSON data
+- [x] Single balance report with parameters (filters) and generates JSON data
   - [x] Balance report query
   - [x] Balance report view
 
@@ -88,7 +88,7 @@ Net Worth Chart
 
 Single Page Web App
 - [x] Serve static files (css/js)
-- [ ] "Static" links for balance sheet, net worth, current income, previous income
+- [x] "Static" links for balance sheet, net worth, current income, previous income
 
 
 ### Second Milestone
@@ -119,7 +119,6 @@ Register Report
 
 Command Bar Enhancements
 - [ ] Add fault tolerance to parameter parsing
-- [ ] Angular / route is hard-coded... erg!
 - [ ] Clean up and improve date/period parsing
 	Additions for period: yyyy, last year, this year
 - [ ] Generate "networth" chart from the command bar
