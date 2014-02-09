@@ -152,27 +152,61 @@ var BalanceReport = React.createClass({
 });
 
 
+
 /*****
   Routes
 *****/
 
 var WealthPulseRouter = Backbone.Router.extend({
   routes: {
-    '': 'balance',
+    '': 'home',
     'balance': 'balance',
     'balance?*query': 'balance',
     'networth': 'networth'
+  }
+});
+
+
+
+/*****
+  App Component
+*****/
+
+var WealthPulseApp = React.createClass({
+  componentWillMount: function () {
+    var that = this;
+    this.router = new WealthPulseRouter();
+    this.router.on('route:home', this.home);
+    this.router.on('route:balance', this.balance);
+    this.router.on('route:networth', this.networth);
+  },
+  componentDidMount: function () {
+    Backbone.history.start();
+  },
+
+  // Routes
+  home: function () {
+    console.log('home');
   },
   balance: function (query) {
     console.log('balance with query='+ query);
   },
-  'networth': function () {
+  networth: function () {
     console.log('networth');
+  },
+
+  render: function() {
+    var navBox = NavBox({});
+    var report = BalanceReport({});
+
+    var div = React.DOM.div({className: "row-fluid"},
+                            React.DOM.nav({className: "span2"}, navBox),
+                            React.DOM.section({className: "span10"}, report));
+
+    return div;
   }
 });
 
-var router = new WealthPulseRouter();
-Backbone.history.start();
 
 
 /*****
@@ -182,13 +216,9 @@ Backbone.history.start();
 console.log("hello");
 
 React.renderComponent(
-  NavBox({}),
-  document.getElementById('sidebar')
+  WealthPulseApp({}),
+  document.getElementById('app')
 );
 
-React.renderComponent(
-  BalanceReport({}),
-  document.getElementById('report')
-);
 
 console.log("goodbye");
