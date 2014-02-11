@@ -70,6 +70,11 @@ Phase 1 Implementation (Reporting)
 *	See http://bugsplat.info/static/stan-demo-report.html for some examples
 
 
+### Bug list
+
+- [ ] Networth chart hover does not work properly in Firefox
+
+
 ### First Milestone
 
 Parsing Ledger File
