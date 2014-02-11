@@ -133,6 +133,9 @@ var BalanceReport = React.createClass({
   Networth Report
 *****/
 
+// NetworthReport
+//   @title
+//   @data
 var NetworthReport = React.createClass({
   componentDidMount: function (root) {
     var margin = {top: 20, right: 20, bottom: 30, left: 55},
@@ -318,13 +321,7 @@ var WealthPulseApp = React.createClass({
   },
   networth: function () {
     console.log('networth');
-    //this.loadData('networth');
-    this.setState({
-      navData: this.state.navData,
-      report: 'networth',
-      query: '',
-      reportData: this.props.networthData
-    });
+    this.loadData('networth');
   },
 
   // Data Fetching

@@ -96,6 +96,28 @@
                                                           :period-end period-end}))}))
 
 
+(defn handle-networth
+  "Handle Networth api request. No possible parameters."
+  [journal]
+  (let [date-formatter (java.text.SimpleDateFormat. "dd-MMM-yyyy")
+        month-formatter (java.text.SimpleDateFormat. "MMM yyyy")
+        format-balance #(.format (NumberFormat/getCurrencyInstance) %)
+        start-month (doto (java.util.Calendar/getInstance)
+                      (.add java.util.Calendar/MONTH -26))
+        add-month #(doto % (.add java.util.Calendar/MONTH 1))
+        generate-period-balance (fn [calendar]
+                                  (let [end-of-month (util/get-last-of-month calendar)
+                                        parameters {:accounts-with ["assets" "liabilities"]
+                                                    :exclude-accounts-with ["units"]
+                                                    :period-start nil
+                                                    :period-end end-of-month}
+                                        [_ totalBalance] (query/balance journal parameters)]
+                                    {:date (.format date-formatter end-of-month)
+                                     :amount (format-balance totalBalance)
+                                     :hover (str (.format month-formatter end-of-month) ": " (format-balance totalBalance))}))]
+    (map (comp generate-period-balance add-month) (repeat 25 start-month))))
+
+
 (defn api-routes
   "Define API routes."
   [journal]
@@ -107,7 +129,7 @@
                                  {:key "Income Statement - Previous Month" :title "Income Statement - Previous Month" :url "#/balance?accountsWith=income+expenses&period=last+month&title=Income+Statement"}]
                        :payees []}))
     (GET "/balance" [& params] (response/response (handle-balance journal params)))
-    (GET "/networth" [& params] (get params :history "No history parameter supplied."))))
+    (GET "/networth" [& params] (response/response (handle-networth journal)))))
 
 
 (defn app-routes
