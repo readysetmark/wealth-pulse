@@ -112,10 +112,11 @@
                                                     :period-start nil
                                                     :period-end end-of-month}
                                         [_ totalBalance] (query/balance journal parameters)]
-                                    {:date (.format date-formatter end-of-month)
-                                     :amount (format-balance totalBalance)
+                                    {:date (.format date-formatter (util/get-first-of-month calendar))
+                                     :amount totalBalance
                                      :hover (str (.format month-formatter end-of-month) ": " (format-balance totalBalance))}))]
-    (map (comp generate-period-balance add-month) (repeat 25 start-month))))
+    {:title "Net Worth"
+     :data (map (comp generate-period-balance add-month) (repeat 25 start-month))}))
 
 
 (defn api-routes

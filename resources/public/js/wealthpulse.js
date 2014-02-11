@@ -357,7 +357,7 @@ var WealthPulseApp = React.createClass({
 
     console.log("will render: "+ this.state.report);
     if (this.state.report == 'networth') {
-      var report = NetworthReport({data: this.props.networthData, title: "Net Worth"});
+      var report = NetworthReport(this.state.reportData);
     }
     else {
       var report = BalanceReport(this.state.reportData);
@@ -377,136 +377,7 @@ var WealthPulseApp = React.createClass({
   Initialization
 *****/
 
-var data = [
-    {
-        "date": "01-Feb-2012",
-        "amount": "67274.75",
-        "hover": "Feb 2012: $67,274.75"
-    },
-    {
-        "date": "01-Mar-2012",
-        "amount": "68694.95",
-        "hover": "Mar 2012: $68,694.95"
-    },
-    {
-        "date": "01-Apr-2012",
-        "amount": "71329.24",
-        "hover": "Apr 2012: $71,329.24"
-    },
-    {
-        "date": "01-May-2012",
-        "amount": "72725.22",
-        "hover": "May 2012: $72,725.22"
-    },
-    {
-        "date": "01-Jun-2012",
-        "amount": "74521.98",
-        "hover": "Jun 2012: $74,521.98"
-    },
-    {
-        "date": "01-Jul-2012",
-        "amount": "75895.80",
-        "hover": "Jul 2012: $75,895.80"
-    },
-    {
-        "date": "01-Aug-2012",
-        "amount": "77437.81",
-        "hover": "Aug 2012: $77,437.81"
-    },
-    {
-        "date": "01-Sep-2012",
-        "amount": "79068.39",
-        "hover": "Sep 2012: $79,068.39"
-    },
-    {
-        "date": "01-Oct-2012",
-        "amount": "85673.64",
-        "hover": "Oct 2012: $85,673.64"
-    },
-    {
-        "date": "01-Nov-2012",
-        "amount": "87553.52",
-        "hover": "Nov 2012: $87,553.52"
-    },
-    {
-        "date": "01-Dec-2012",
-        "amount": "91000.94",
-        "hover": "Dec 2012: $91,000.94"
-    },
-    {
-        "date": "01-Jan-2013",
-        "amount": "93154.46",
-        "hover": "Jan 2013: $93,154.46"
-    },
-    {
-        "date": "01-Feb-2013",
-        "amount": "93603.01",
-        "hover": "Feb 2013: $93,603.01"
-    },
-    {
-        "date": "01-Mar-2013",
-        "amount": "95286.04",
-        "hover": "Mar 2013: $95,286.04"
-    },
-    {
-        "date": "01-Apr-2013",
-        "amount": "106497.68",
-        "hover": "Apr 2013: $106,497.68"
-    },
-    {
-        "date": "01-May-2013",
-        "amount": "106901.58",
-        "hover": "May 2013: $106,901.58"
-    },
-    {
-        "date": "01-Jun-2013",
-        "amount": "109338.07",
-        "hover": "Jun 2013: $109,338.07"
-    },
-    {
-        "date": "01-Jul-2013",
-        "amount": "113594.41",
-        "hover": "Jul 2013: $113,594.41"
-    },
-    {
-        "date": "01-Aug-2013",
-        "amount": "112469.49",
-        "hover": "Aug 2013: $112,469.49"
-    },
-    {
-        "date": "01-Sep-2013",
-        "amount": "110621.14",
-        "hover": "Sep 2013: $110,621.14"
-    },
-    {
-        "date": "01-Oct-2013",
-        "amount": "113759.10",
-        "hover": "Oct 2013: $113,759.10"
-    },
-    {
-        "date": "01-Nov-2013",
-        "amount": "117592.22",
-        "hover": "Nov 2013: $117,592.22"
-    },
-    {
-        "date": "01-Dec-2013",
-        "amount": "122505.95",
-        "hover": "Dec 2013: $122,505.95"
-    },
-    {
-        "date": "01-Jan-2014",
-        "amount": "127029.68",
-        "hover": "Jan 2014: $127,029.68"
-    },
-    {
-        "date": "01-Feb-2014",
-        "amount": "125929.95",
-        "hover": "Feb 2014: $125,929.95"
-    }
-];
-
-
 React.renderComponent(
-  WealthPulseApp({networthData: data}),
+  WealthPulseApp({}),
   document.getElementById('app')
 );
