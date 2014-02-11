@@ -84,7 +84,7 @@ Balance Report
   - [x] Balance report view
 
 Net Worth Chart
-- [ ] Report to generate JSON data for a networth chart
+- [x] Report to generate JSON data for a networth chart
 
 Single Page Web App
 - [x] Serve static files (css/js)
