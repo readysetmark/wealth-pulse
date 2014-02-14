@@ -4,12 +4,15 @@
 
 // ReportNav
 //   @className
-//   @url
 //   @title
+//   @report
+//   @query
 var ReportNav = React.createClass({
   render: function() {
+    var query = this.props.query.length > 0 ? "?" + this.props.query : "";
+    var url = "#/" + this.props.report + query;
     return React.DOM.li({className: this.props.className},
-                        React.DOM.a({href: this.props.url}, this.props.title));
+                        React.DOM.a({href: url}, this.props.title));
   }
 });
 
@@ -31,20 +34,33 @@ var PayeeNav = React.createClass({
 
 
 // NavBox
+//   @reports
+//   @payees
+//   @report
+//   @query
 var NavBox = React.createClass({
   render: function() {
     var report_nodes = [];
     var payee_nodes = [];
     var i = 0;
 
-    if (this.props.hasOwnProperty('reports')) {
+    if (this.props.reports) {
       for (i = 0; i < this.props.reports.length; i++) {
         var report = this.props.reports[i];
-        report_nodes.push(ReportNav(report));
+        var className = null;
+        if (report.report === this.props.report && this.props.query === report.query) {
+          className = "active";
+        }
+        report_nodes.push(ReportNav({
+          className: className,
+          title: report.title,
+          report: report.report,
+          query: report.query
+        }));
       }
     }
 
-    if (this.props.hasOwnProperty('payees')) {
+    if (this.props.payees) {
       for (i = 0; i < this.props.payees.length; i++) {
         var payee = this.props.payees[i];
         payee_nodes.push(PayeeNav({className: payee.class,
@@ -352,7 +368,12 @@ var WealthPulseApp = React.createClass({
   },
 
   render: function() {
-    var navBox = NavBox(this.state.navData);
+    var navBox = NavBox({
+      reports: this.state.navData.reports,
+      payees: this.state.navData.payees,
+      report: this.state.report,
+      query: this.state.query
+    });
     var report;
 
     console.log("will render: "+ this.state.report);

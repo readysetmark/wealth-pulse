@@ -119,16 +119,21 @@
      :data (map (comp generate-period-balance add-month) (repeat 25 start-month))}))
 
 
+(defn handle-nav
+  "Handle Nav api request. No possible parameters."
+  [journal]
+  {:reports [{:key "Balance Sheet" :title "Balance Sheet" :report "balance" :query "accountsWith=assets+liabilities&excludeAccountsWith=units&title=Balance+Sheet"}
+             {:key "Net Worth" :title "Net Worth" :report "networth" :query ""}
+             {:key "Income Statement - Current Month" :title "Income Statement - Current Month" :report "balance" :query "accountsWith=income+expenses&period=this+month&title=Income+Statement"}
+             {:key "Income Statement - Previous Month" :title "Income Statement - Previous Month" :report "balance" :query "accountsWith=income+expenses&period=last+month&title=Income+Statement"}]
+   :payees []})
+
+
 (defn api-routes
   "Define API routes."
   [journal]
   (routes
-    (GET "/nav" [] (response/response
-                      {:reports [{:key "Balance Sheet" :title "Balance Sheet" :url "#/balance?accountsWith=assets+liabilities&excludeAccountsWith=units&title=Balance+Sheet"}
-                                 {:key "Net Worth" :title "Net Worth" :url "#/networth"}
-                                 {:key "Income Statement - Current Month" :title "Income Statement - Current Month" :url "#/balance?accountsWith=income+expenses&period=this+month&title=Income+Statement"}
-                                 {:key "Income Statement - Previous Month" :title "Income Statement - Previous Month" :url "#/balance?accountsWith=income+expenses&period=last+month&title=Income+Statement"}]
-                       :payees []}))
+    (GET "/nav" [] (response/response (handle-nav journal)))
     (GET "/balance" [& params] (response/response (handle-balance journal params)))
     (GET "/networth" [& params] (response/response (handle-networth journal)))))
 
