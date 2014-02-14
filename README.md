@@ -70,20 +70,12 @@ Phase 1 Implementation (Reporting)
 *	See http://bugsplat.info/static/stan-demo-report.html for some examples
 
 
-### Bugs / Fix mes
-
-- [ ] Networth chart hover does not work properly in Firefox
-- [ ] Clean up web.clj
-- [ ]
-
-
 ### First Milestone
 
 Parsing Ledger File
 - [x] Basic / optimistic parsing of ledger file
 - [x] Autobalance transactions
 - [x] Ensure transactions balance (if not autobalanced)
-- [ ] Unit tests
 
 Balance Report
 - [x] Single balance report with parameters (filters) and generates JSON data
@@ -134,6 +126,16 @@ Command Bar Enhancements
 Documentation
 - [ ] github wiki
 	- [ ] how to use / setup
+
+
+### Maybe Eventually
+
+- [ ] Networth chart hover does not work properly in Firefox
+- [ ] Clean up web.clj
+- [ ] Unit tests
+- [ ] Speed up parsing with instaparse?
+- [ ] Speed up balance query by filtering accounts first?
+- [ ] Speed up networth using custom query?
 
 
 Phase 2 Implementation (Commodities)
