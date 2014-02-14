@@ -232,7 +232,8 @@ var NetworthReport = React.createClass({
 
     var hover = svg.append("g")
     .attr("class", "node-hover")
-    .style("display", "none");
+    .style("display", "block")
+    .style("visibility", "hidden");
 
     var hover_rect = hover.append("rect")
     .attr("class", "node-hover-rect")
@@ -273,10 +274,10 @@ var NetworthReport = React.createClass({
 
       hover
       .attr("transform", "translate(" + translate_x + ", " + translate_y +")")
-      .style("display", "block");
+      .style("visibility", "visible");
     })
     .on("mouseout", function(d) {
-      hover.style("display", "none");
+      hover.style("visibility", "hidden");
     })
   },
   render: function () {

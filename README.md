@@ -128,9 +128,9 @@ Documentation
 	- [ ] how to use / setup
 
 
-### Maybe Eventually
+### Someday/Maybe
 
-- [ ] Networth chart hover does not work properly in Firefox
+- [x] Networth chart hover does not work properly in Firefox
 - [ ] Clean up web.clj
 - [ ] Clean up wealthpulse.js
 - [ ] Unit tests
