@@ -70,9 +70,11 @@ Phase 1 Implementation (Reporting)
 *	See http://bugsplat.info/static/stan-demo-report.html for some examples
 
 
-### Bug list
+### Bugs / Fix mes
 
 - [ ] Networth chart hover does not work properly in Firefox
+- [ ] Clean up web.clj
+- [ ]
 
 
 ### First Milestone
