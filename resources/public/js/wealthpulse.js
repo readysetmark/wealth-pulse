@@ -48,7 +48,7 @@ var NavBox = React.createClass({
       for (i = 0; i < this.props.reports.length; i++) {
         var report = this.props.reports[i];
         var className = null;
-        if (report.report === this.props.report && this.props.query === report.query) {
+        if (report.report === this.props.report && report.query === this.props.query) {
           className = "active";
         }
         report_nodes.push(ReportNav({
@@ -349,7 +349,7 @@ var WealthPulseApp = React.createClass({
         self.setState({
           navData: navArgs[0],
           report: report,
-          query: query,
+          query: query ? query : "",
           reportData: reportArgs[0]
         });
       });

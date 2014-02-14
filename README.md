@@ -94,7 +94,7 @@ Single Page Web App
 
 Dynamic Website:
 - [ ] Setup command bar
-- [ ] Highlight active page on navlist
+- [x] Highlight active page on navlist
 - [ ] Watch ledger file and reload on change
 	- [ ] Handle situation where file cannot be parsed
 
@@ -132,6 +132,7 @@ Documentation
 
 - [ ] Networth chart hover does not work properly in Firefox
 - [ ] Clean up web.clj
+- [ ] Clean up wealthpulse.js
 - [ ] Unit tests
 - [ ] Speed up parsing with instaparse?
 - [ ] Speed up balance query by filtering accounts first?
