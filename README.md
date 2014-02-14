@@ -36,7 +36,7 @@ TBD
 
 ### Development
 
-  lein ring server-headless
+    lein ring server-headless
 
 
 Command Bar Supported Commands
@@ -44,25 +44,26 @@ Command Bar Supported Commands
 
 ** *Not implemented yet!* **
 
-Commands:
+Commands
 
-	bal [accounts-to-include] [parameters]
+    bal [accounts-to-include] [parameters]
 
-	reg [accounts-to-include] [parameters]
+    reg [accounts-to-include] [parameters]
 
-  networth
+    networth
 
-Parameters:
 
-	:exclude [accounts-to-exclude]
+Parameters
 
-	:period [this month|last month]
+    :exclude [accounts-to-exclude]
 
-	:since [yyyy/mm/dd]
+    :period [this month|last month]
 
-	:upto [yyyy/mm/dd]
+    :since [yyyy/mm/dd]
 
-	:title [report title]
+    :upto [yyyy/mm/dd]
+
+    :title [report title]
 
 
 Implementation Notes
