@@ -15,7 +15,18 @@ Long-term: provide better reporting on investments.
 Dependencies
 ------------
 
-TBD
+Backend
+- Clojure 1.5.1
+- Instaparse 1.2.12
+- Compojure 1.1.6
+- Ring-JSON 0.2.0
+
+Frontend
+- React 0.8.0
+- Backbone 1.1.0 (routing only)
+- D3 3.0.0
+- jQuery 2.1.0
+- Bootstrap 2.3.1
 
 
 How to Run
@@ -23,9 +34,9 @@ How to Run
 
 TBD
 
-Development:
+### Development
 
-lein ring server-headless
+  lein ring server-headless
 
 
 Command Bar Supported Commands
@@ -38,6 +49,8 @@ Commands:
 	bal [accounts-to-include] [parameters]
 
 	reg [accounts-to-include] [parameters]
+
+  networth
 
 Parameters:
 
