@@ -1,4 +1,28 @@
 /*****
+  Command Bar
+*****/
+
+$(document).bind('keyup', '/', function () {
+  $("#command").focus();
+});
+
+
+$("#command").keypress(function(e) {
+  if (e.which == 13) {
+    e.preventDefault();
+    processCommand();
+  }
+});
+
+
+function processCommand() {
+  var command = $("#command").val();
+  console.log("Submitted: "+ command);
+  return false;
+}
+
+
+/*****
   Sidebar Navigation
 *****/
 

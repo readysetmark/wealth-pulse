@@ -6,6 +6,7 @@
 	<link rel="stylesheet" href="css/wealthpulse.css">
 	<link rel="stylesheet" href="lib/bootstrap/css/bootstrap.min.css" media="screen">
     <script src="lib/jquery-2.1.0/jquery.js"></script>
+    <script src="lib/jquery-2.1.0/jquery.hotkeys.js"></script>
     <script src="lib/react-0.8.0/react.js"></script>
     <script src="lib/backbone-1.1.0/underscore.js"></script>
     <script src="lib/backbone-1.1.0/backbone.js"></script>
@@ -20,8 +21,8 @@
                 <a class="brand" href="/">Wealth Pulse</a>
 
 				<form class="navbar-form pull-right" name="command">
-					<input type="text" name="cmd" class="span8" placeholder="Command">
-					<button type="submit" class="btn btn-primary">Submit</button>
+					<input type="text" id="command" name="command" class="span8" placeholder="Command">
+					<button type="button" class="btn btn-primary" onClick="processCommand()">Submit</button>
 				</form>
 			</div>
 		</div>
