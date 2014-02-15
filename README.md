@@ -44,13 +44,15 @@ Command Bar Supported Commands
 
 ** *Not implemented yet!* **
 
+You can use the / hotkey to reach the command bar.
+
 Commands
 
-    bal [accounts-to-include] [parameters]
+    Balance:   bal [accounts-to-include] [parameters]
 
-    reg [accounts-to-include] [parameters]
+    Register:  reg [accounts-to-include] [parameters]
 
-    networth
+    Net Worth: nw
 
 
 Parameters
