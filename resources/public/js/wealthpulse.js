@@ -59,6 +59,19 @@ function parseParameters(tokens) {
 }
 
 
+function toQueryString(parameters) {
+  var collect = function(state, value, key) {
+    if (state.length > 0) {
+      state += "&";
+    }
+    state += key + "=" + value.join("+");
+    return state;
+  };
+
+  return _.reduce(parameters, collect, "");
+}
+
+
 function processCommand() {
   var command = $("#command").val();
 
@@ -67,6 +80,8 @@ function processCommand() {
     var report = determineReport(tokens[0]);
     tokens.shift();
     var parameters = parseParameters(tokens);
+    var query = toQueryString(parameters);
+    console.log(query);
   }
 
   return false;
