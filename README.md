@@ -23,9 +23,11 @@ Backend
 
 Frontend
 - React 0.8.0
-- Backbone 1.1.0 (routing only)
+- Underscore 1.6.0
+- Backbone 1.1.1 (routing only)
 - D3 3.0.0
 - jQuery 2.1.0
+- jQuery Hotkeys
 - Bootstrap 2.3.1
 
 
@@ -109,10 +111,8 @@ Single Page Web App
 ### Second Milestone
 
 Dynamic Website:
-- [ ] Setup command bar
+- [x] Setup command bar
 - [x] Highlight active page on navlist
-- [ ] Watch ledger file and reload on change
-	- [ ] Handle situation where file cannot be parsed
 
 
 ### Third Milestone
@@ -136,8 +136,13 @@ Command Bar Enhancements
 - [ ] Add fault tolerance to parameter parsing
 - [ ] Clean up and improve date/period parsing
 	Additions for period: yyyy, last year, this year
-- [ ] Generate "networth" chart from the command bar
+- [x] Generate "networth" chart from the command bar
 - [ ] Autocomplete hints (bootstrap typeahead)
+
+Setup Runnable App
+- [ ] Write main
+- [ ] Watch ledger file and reload on change
+	- [ ] Handle situation where file cannot be parsed
 
 Documentation
 - [ ] github wiki

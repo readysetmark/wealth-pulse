@@ -1,94 +1,4 @@
 /*****
-  Command Bar
-*****/
-
-$(document).bind('keyup', '/', function () {
-  $("#command").focus();
-});
-
-
-$("#command").keypress(function(e) {
-  if (e.which == 13) {
-    e.preventDefault();
-    processCommand();
-  }
-});
-
-
-function determineReport(token) {
-  switch (token) {
-    case 'bal':
-    case 'balance':
-      return 'balance';
-    case 'reg':
-    case 'register':
-      return 'register';
-    case 'nw':
-    case 'networth':
-      return 'networth';
-    default:
-      throw new Error("Unable to determine report.");
-  }
-}
-
-
-function parseParameters(tokens) {
-  var collect = function (state, value) {
-    if (value[0] === ':') {
-      // keyword changes parse mode
-      var newMode = value.substring(1);
-      if (newMode === "exclude") {
-        newMode = "excludeAccountsWith";
-      }
-      state.mode = newMode;
-    }
-    else {
-      // collect values in current mode
-      if (state.parameters.hasOwnProperty(state.mode)) {
-        state.parameters[state.mode].push(value);
-      }
-      else {
-        state.parameters[state.mode] = [value];
-      }
-    }
-
-    return state;
-  };
-
-  return _.reduce(tokens, collect, {mode: 'accountsWith', parameters: {}}).parameters;
-}
-
-
-function toQueryString(parameters) {
-  var collect = function(state, value, key) {
-    if (state.length > 0) {
-      state += "&";
-    }
-    state += key + "=" + value.join("+");
-    return state;
-  };
-
-  return _.reduce(parameters, collect, "");
-}
-
-
-function processCommand() {
-  var command = $("#command").val();
-
-  if (command.length > 0) {
-    var tokens = command.toLowerCase().split(" ");
-    var report = determineReport(tokens[0]);
-    tokens.shift();
-    var parameters = parseParameters(tokens);
-    var query = toQueryString(parameters);
-    console.log(query);
-  }
-
-  return false;
-}
-
-
-/*****
   Sidebar Navigation
 *****/
 
@@ -388,8 +298,7 @@ var NetworthReport = React.createClass({
 var WealthPulseRouter = Backbone.Router.extend({
   routes: {
     '': 'home',
-    'balance': 'balance',
-    'balance?*query': 'balance',
+    'balance(?*query)': 'balance',
     'networth': 'networth'
   }
 });
@@ -412,22 +321,42 @@ var WealthPulseApp = React.createClass({
     this.router.on('route:networth', this.networth);
   },
   componentDidMount: function () {
+    var self = this;
     Backbone.history.start();
+
+    // bind '/' as hotkey for command bar
+    $(document).bind('keyup', '/', function () {
+      $("#command").focus().select();
+    });
+
+    // do not submit form when <enter> pressed
+    $("#command").keypress(function(e) {
+      if (e.which == 13) {
+        e.preventDefault();
+        self.processCommand();
+      }
+    });
+
+    $("#submit").click(function(e) {
+      e.preventDefault();
+      self.processCommand();
+      return false;
+    });
   },
 
   // Routes
   home: function () {
     var defaultReport = 'balance';
     var defaultQuery = 'accountsWith=assets+liabilities&excludeAccountsWith=units&title=Balance+Sheet';
-    console.log('home');
+    //console.log('home');
     this.loadData(defaultReport, defaultQuery);
   },
   balance: function (query) {
-    console.log('balance with query='+ query);
+    //console.log('balance with query='+ query);
     this.loadData('balance', query);
   },
   networth: function () {
-    console.log('networth');
+    //console.log('networth');
     this.loadData('networth');
   },
 
@@ -436,7 +365,7 @@ var WealthPulseApp = React.createClass({
     var self = this;
     $.when(this.loadNav(), this.loadReport(report, query))
       .done(function (navArgs, reportArgs) {
-        console.log("ajax done.");
+        //console.log("ajax done.");
         self.setState({
           navData: navArgs[0],
           report: report,
@@ -458,28 +387,114 @@ var WealthPulseApp = React.createClass({
     });
   },
 
+  // Command bar
+  determineReport: function (token) {
+    switch (token) {
+      case 'bal':
+      case 'balance':
+        return 'balance';
+      case 'reg':
+      case 'register':
+        return 'register';
+      case 'nw':
+      case 'networth':
+        return 'networth';
+      default:
+        throw new Error("Unable to determine report.");
+    }
+  },
+  parseParameters: function (tokens) {
+    var collect = function (state, value) {
+      if (value[0] === ':') {
+        // keyword changes parse mode
+        var newMode = value.substring(1);
+        if (newMode === "exclude") {
+          newMode = "excludeAccountsWith";
+        }
+        state.mode = newMode;
+      }
+      else {
+        // collect values in current mode
+        if (state.parameters.hasOwnProperty(state.mode)) {
+          state.parameters[state.mode].push(value);
+        }
+        else {
+          state.parameters[state.mode] = [value];
+        }
+      }
+
+      return state;
+    };
+
+    return _.reduce(tokens, collect, {mode: 'accountsWith', parameters: {}}).parameters;
+  },
+  parametersToQueryString: function (parameters) {
+    var collect = function(state, value, key) {
+      if (state.length > 0) {
+        state += "&";
+      }
+      state += key + "=" + value.join("+");
+      return state;
+    };
+
+    return _.reduce(parameters, collect, "");
+  },
+  processCommand: function () {
+    var command = $("#command").val();
+
+    if (command.length > 0) {
+      var tokens = command.toLowerCase().split(" ");
+      var report = this.determineReport(tokens[0]);
+      tokens.shift();
+      var parameters = this.parseParameters(tokens);
+      var query = this.parametersToQueryString(parameters);
+      var url = '#/' + report + (query.length > 0 ? "?" + query : "");
+      //console.log(url);
+      this.router.navigate(url, {trigger: true});
+    }
+  },
+
   render: function() {
+    var report = null;
     var navBox = NavBox({
       reports: this.state.navData.reports,
       payees: this.state.navData.payees,
       report: this.state.report,
       query: this.state.query
     });
-    var report;
 
-    console.log("will render: "+ this.state.report);
-    if (this.state.report == 'networth') {
-      var report = NetworthReport(this.state.reportData);
+    //console.log("will render: "+ this.state.report);
+    switch (this.state.report) {
+      case 'balance':
+        report = BalanceReport(this.state.reportData);
+        break;
+      case 'networth':
+        report = NetworthReport(this.state.reportData);
+        break;
     }
-    else {
-      var report = BalanceReport(this.state.reportData);
-    }
 
-    var div = React.DOM.div({className: "row-fluid"},
-                            React.DOM.nav({className: "span2"}, navBox),
-                            React.DOM.section({className: "span10"}, report));
+    var header = React.DOM.div({className: "navbar navbar-inverse navbar-fixed-top"},
+                               React.DOM.div({className: "navbar-inner"},
+                                             React.DOM.div({className: "container-fluid"},
+                                                           React.DOM.a({className: "brand", href: "/"},
+                                                                       "Wealth Pulse"),
+                                                           React.DOM.form({className: "navbar-form pull-right", name: "command"},
+                                                                          React.DOM.input({type: "text",
+                                                                                           id: "command",
+                                                                                           name: "command",
+                                                                                           className: "span8",
+                                                                                           placeholder: "Command"}),
+                                                                          React.DOM.button({type: "button",
+                                                                                            id: "submit",
+                                                                                            className: "btn btn-primary"},
+                                                                                           "Submit")))));
 
-    return div;
+    var body = React.DOM.div({className: "container-fluid"},
+                             React.DOM.div({className: "row-fluid"},
+                                           React.DOM.nav({className: "span2"}, navBox),
+                                           React.DOM.section({className: "span10"}, report)));
+
+    return React.DOM.div({id: "app"}, header, body);
   }
 });
 
@@ -491,5 +506,5 @@ var WealthPulseApp = React.createClass({
 
 React.renderComponent(
   WealthPulseApp({}),
-  document.getElementById('app')
+  document.body
 );
