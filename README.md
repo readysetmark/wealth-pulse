@@ -44,9 +44,7 @@ TBD
 Command Bar Supported Commands
 ------------------------------
 
-** *Not implemented yet!* **
-
-You can use the / hotkey to reach the command bar.
+You can use the '/' hotkey to reach the command bar.
 
 Commands
 
