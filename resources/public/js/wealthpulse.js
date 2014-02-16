@@ -15,9 +15,60 @@ $("#command").keypress(function(e) {
 });
 
 
+function determineReport(token) {
+  switch (token) {
+    case 'bal':
+    case 'balance':
+      return 'balance';
+    case 'reg':
+    case 'register':
+      return 'register';
+    case 'nw':
+    case 'networth':
+      return 'networth';
+    default:
+      throw new Error("Unable to determine report.");
+  }
+}
+
+
+function parseParameters(tokens) {
+  var collect = function (state, value) {
+    if (value[0] === ':') {
+      // keyword changes parse mode
+      var newMode = value.substring(1);
+      if (newMode === "exclude") {
+        newMode = "excludeAccountsWith";
+      }
+      state.mode = newMode;
+    }
+    else {
+      // collect values in current mode
+      if (state.parameters.hasOwnProperty(state.mode)) {
+        state.parameters[state.mode].push(value);
+      }
+      else {
+        state.parameters[state.mode] = [value];
+      }
+    }
+
+    return state;
+  };
+
+  return _.reduce(tokens, collect, {mode: 'accountsWith', parameters: {}}).parameters;
+}
+
+
 function processCommand() {
   var command = $("#command").val();
-  console.log("Submitted: "+ command);
+
+  if (command.length > 0) {
+    var tokens = command.toLowerCase().split(" ");
+    var report = determineReport(tokens[0]);
+    tokens.shift();
+    var parameters = parseParameters(tokens);
+  }
+
   return false;
 }
 

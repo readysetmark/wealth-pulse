@@ -147,6 +147,7 @@ Documentation
 ### Someday/Maybe
 
 - [x] Networth chart hover does not work properly in Firefox
+- [ ] Move title/subtitle stuff to frontend?
 - [ ] Clean up web.clj
 - [ ] Clean up wealthpulse.js
 - [ ] Unit tests
