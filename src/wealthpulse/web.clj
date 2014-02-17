@@ -122,7 +122,7 @@
 (defn handle-nav
   "Handle Nav api request. No possible parameters."
   [journal]
-  {:reports [{:key "Balance Sheet" :title "Balance Sheet" :report "balance" :query "accountsWith=assets+liabilities&excludeAccountsWith=units&title=Balance+Sheet"}
+  {:reports [{:key "Balance Sheet" :title "Balance Sheet" :report "balance" :query "accountsWith=assets+liabilities&excludeAccountsWith=units"}
              {:key "Net Worth" :title "Net Worth" :report "networth" :query ""}
              {:key "Income Statement - Current Month" :title "Income Statement - Current Month" :report "balance" :query "accountsWith=income+expenses&period=this+month&title=Income+Statement"}
              {:key "Income Statement - Previous Month" :title "Income Statement - Previous Month" :report "balance" :query "accountsWith=income+expenses&period=last+month&title=Income+Statement"}]
