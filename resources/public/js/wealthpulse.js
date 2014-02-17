@@ -55,7 +55,8 @@ var NavBox = React.createClass({
           className: className,
           title: report.title,
           report: report.report,
-          query: report.query
+          query: report.query,
+          key: report.key
         }));
       }
     }
@@ -347,7 +348,7 @@ var WealthPulseApp = React.createClass({
   // Routes
   home: function () {
     var defaultReport = 'balance';
-    var defaultQuery = 'accountsWith=assets+liabilities&excludeAccountsWith=units&title=Balance+Sheet';
+    var defaultQuery = 'accountsWith=assets+liabilities&excludeAccountsWith=units';
     //console.log('home');
     this.loadData(defaultReport, defaultQuery);
   },
