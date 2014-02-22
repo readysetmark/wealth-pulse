@@ -62,12 +62,13 @@
 (defn exclude-parent-accounts-where-child-has-same-balance
   "Filters a vector of [account, balance] tuples, removing all tuples where a sub-account tuple exists with the same amount."
   [account-balances]
-  (let [exists-child-account-with-same-balance (fn [[account, balance]]
-                                                  (not (some (fn [[other-account, other-balance]]
-                                                               (and (.startsWith other-account account)
-                                                                    (> (.length other-account) (.length account))
-                                                                    (bigdec= other-balance balance)))
-                                                             account-balances)))]
+  (letfn [(exists-child-account-with-same-balance
+           [[account, balance]]
+           (not (some (fn [[other-account, other-balance]]
+                        (and (.startsWith other-account account)
+                             (> (.length other-account) (.length account))
+                             (bigdec= other-balance balance)))
+                      account-balances)))]
     (filter exists-child-account-with-same-balance account-balances)))
 
 
@@ -112,12 +113,21 @@
 
 
 (defn register
-  "Returns a tuple of [] that match the filters, where ... .
+  "Returns a vector of [date description lines] that match the filters, where lines
+  is a vector of [account amount total] tuples.
   Valid filters are:
     :accounts-with :: select entries containing any of these strings.
     :exclude-accounts-with :: filter out entries containing any of these strings.
     :period-start :: select entries on or after this date.
     :period-end :: select entries up to and including this date."
   [journal {:keys [accounts-with exclude-accounts-with period-start period-end] :as filters}]
-  (let [filtered-entries (filter-entries journal filters)]
-    filtered-entries))
+  (letfn [(get-register-lines
+           [transactions]
+           {:date (get-in (first transactions) [:header :date])
+            :payee (get-in (first transactions) [:header :payee])
+            :entries (map #(select-keys % [:account :amount]) transactions)})]
+    (let [filtered-entries (filter-entries journal filters)
+          grouped-entries (partition-by :header filtered-entries)
+          transactions (map get-register-lines grouped-entries)
+          n transactions]
+      n)))
