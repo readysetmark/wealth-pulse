@@ -121,13 +121,24 @@
     :period-start :: select entries on or after this date.
     :period-end :: select entries up to and including this date."
   [journal {:keys [accounts-with exclude-accounts-with period-start period-end] :as filters}]
-  (letfn [(get-register-lines
-           [transactions]
-           {:date (get-in (first transactions) [:header :date])
-            :payee (get-in (first transactions) [:header :payee])
-            :entries (map #(select-keys % [:account :amount]) transactions)})]
+  (letfn [(calc-transaction-lines
+           [coll entry]
+           (let [running-total (+ (:amount entry) (:running-total coll))
+                 mapped-entry (merge (select-keys entry [:account :amount]) {:total running-total})]
+             {:entries (cons mapped-entry (:entries coll))
+              :running-total running-total}))
+          (calc-register-lines
+           [coll transactions]
+           (let [entries-total (reduce calc-transaction-lines {:entries [] :running-total (:running-total coll)} transactions)
+                 entries (:entries entries-total)
+                 running-total (:running-total entries-total)
+                 transaction {:date (get-in (first transactions) [:header :date])
+                              :payee (get-in (first transactions) [:header :payee])
+                              :entries entries}]
+             {:transactions (cons transaction (:transactions coll))
+              :running-total running-total}))]
     (let [filtered-entries (filter-entries journal filters)
           grouped-entries (partition-by :header filtered-entries)
-          transactions (map get-register-lines grouped-entries)
+          transactions (:transactions (reduce calc-register-lines {:transactions [] :running-total 0M} grouped-entries))
           n transactions]
       n)))
