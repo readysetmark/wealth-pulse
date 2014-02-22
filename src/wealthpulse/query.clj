@@ -95,7 +95,7 @@
 
 (defn balance
   "Returns a tuple of [account-balances, total-balance] that match the filters, where
-  account-balances is a vector of [account, amount] tuples.
+  account-balances is a vector of [account, amount] tuples, and total-balance is an amount.
   Valid filters are:
     :accounts-with :: select entries containing any of these strings.
     :exclude-accounts-with :: filter out entries containing any of these strings.
@@ -109,3 +109,15 @@
                              exclude-parent-accounts-where-child-has-same-balance)
         total-balance (calc-total-balance filtered-entries)]
     [account-balances, total-balance]))
+
+
+(defn register
+  "Returns a tuple of [] that match the filters, where ... .
+  Valid filters are:
+    :accounts-with :: select entries containing any of these strings.
+    :exclude-accounts-with :: filter out entries containing any of these strings.
+    :period-start :: select entries on or after this date.
+    :period-end :: select entries up to and including this date."
+  [journal {:keys [accounts-with exclude-accounts-with period-start period-end] :as filters}]
+  (let [filtered-entries (filter-entries journal filters)]
+    filtered-entries))
