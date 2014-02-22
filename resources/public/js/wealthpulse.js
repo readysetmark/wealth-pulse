@@ -102,10 +102,11 @@ var NavBox = React.createClass({
 //   @account
 var BalanceReportRow = React.createClass({
   render: function() {
+    var link = "#/register?accountsWith=" + encodeURIComponent(this.props.key);
     var row = React.DOM.tr({className: this.props.rowClass},
                            React.DOM.td({className: "currency "+ this.props.balanceClass}, this.props.balance),
                            React.DOM.td({style: this.props.accountStyle},
-                                        React.DOM.a({href: "#/TODO_register_link"}, this.props.account)));
+                                        React.DOM.a({href: link}, this.props.account)));
     return row;
   }
 });
@@ -138,6 +139,88 @@ var BalanceReport = React.createClass({
                                                                  React.DOM.tr(null,
                                                                               React.DOM.th(null, "Balance"),
                                                                               React.DOM.th(null, "Account"))),
+                                                 React.DOM.tbody(null, table_rows)));
+
+    return React.DOM.div(null, header, body);
+  }
+});
+
+
+
+/*****
+  Register Report
+*****/
+
+// RegisterReportRow
+//   @cellClass
+//   @date
+//   @description
+//   @account
+//   @amount
+//   @total
+var RegisterReportRow = React.createClass({
+  render: function() {
+    var link = "#/register?accountsWith=" + encodeURIComponent(this.props.account);
+    var row = React.DOM.tr(null,
+                           React.DOM.td({className: this.props.cellClass}, this.props.date),
+                           React.DOM.td({className: this.props.cellClass}, this.props.description),
+                           React.DOM.td({className: this.props.cellClass}, React.DOM.a({href: link}, this.props.account)),
+                           React.DOM.td({className: "currency " + this.props.cellClass}, this.props.amount),
+                           React.DOM.td({className: "currency " + this.props.cellClass}, this.props.total));
+    return row;
+  }
+});
+
+
+// RegisterReport
+//   @title
+//   @subtitle
+//   @register
+var RegisterReport = React.createClass({
+  render: function() {
+    var table_rows = [];
+    var i = 0;
+    var j = 0;
+
+    if (this.props.hasOwnProperty('register')) {
+      for (i = 0; i < this.props.register.length; i++) {
+        var transaction = this.props.register[i];
+        for (j = 0; j < transaction.entries.length; j++) {
+          var data = {
+            key: transaction.date +"~"+
+                 transaction.payee +"~"+
+                 transaction.entries[j].account +"~"+
+                 transaction.entries[j].amount,
+            account: transaction.entries[j].account,
+            amount: transaction.entries[j].amount,
+            total: transaction.entries[j].total
+          };
+          if (j === 0) {
+            data.date = transaction.date;
+            data.description = transaction.payee;
+          }
+          else {
+            data.cellClass = "no-border-top";
+          }
+          table_rows.push(RegisterReportRow(data));
+        }
+      }
+    }
+
+    var header = React.DOM.header({className: "page-header"},
+                                  React.DOM.h1(null,
+                                               this.props.title,
+                                               React.DOM.br(),
+                                               React.DOM.small(null, this.props.subtitle)));
+    var body = React.DOM.section({className: "span10"},
+                                 React.DOM.table({className: "table table-hover table-condensed"},
+                                                 React.DOM.thead(null,
+                                                                 React.DOM.tr(null,
+                                                                              React.DOM.th({style: {"min-width": "75px"}}, "Date"),
+                                                                              React.DOM.th(null, "Description"),
+                                                                              React.DOM.th(null, "Account"),
+                                                                              React.DOM.th(null, "Amount"),
+                                                                              React.DOM.th(null, "Total"))),
                                                  React.DOM.tbody(null, table_rows)));
 
     return React.DOM.div(null, header, body);
@@ -300,6 +383,7 @@ var WealthPulseRouter = Backbone.Router.extend({
   routes: {
     '': 'home',
     'balance(?*query)': 'balance',
+    'register(?*query)': 'register',
     'networth': 'networth'
   }
 });
@@ -319,6 +403,7 @@ var WealthPulseApp = React.createClass({
     this.router = new WealthPulseRouter();
     this.router.on('route:home', this.home);
     this.router.on('route:balance', this.balance);
+    this.router.on('route:register', this.register);
     this.router.on('route:networth', this.networth);
   },
   componentDidMount: function () {
@@ -355,6 +440,10 @@ var WealthPulseApp = React.createClass({
   balance: function (query) {
     //console.log('balance with query='+ query);
     this.loadData('balance', query);
+  },
+  register: function (query) {
+    //console.log('register with query='+ query);
+    this.loadData('register', query);
   },
   networth: function () {
     //console.log('networth');
@@ -468,6 +557,9 @@ var WealthPulseApp = React.createClass({
     switch (this.state.report) {
       case 'balance':
         report = BalanceReport(this.state.reportData);
+        break;
+      case 'register':
+        report = RegisterReport(this.state.reportData);
         break;
       case 'networth':
         report = NetworthReport(this.state.reportData);

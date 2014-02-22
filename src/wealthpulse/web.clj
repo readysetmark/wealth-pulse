@@ -70,6 +70,25 @@
                               :rowClass "grand_total"})))
 
 
+
+(defn present-register
+  "Transform register data for presentation."
+  [transactions]
+  (letfn [(present-entry
+           [entry]
+           (let [currency-formatter (NumberFormat/getCurrencyInstance)]
+             {:account (:account entry)
+              :amount (.format currency-formatter (:amount entry))
+              :total (.format currency-formatter (:total entry))}))
+          (present-transaction
+           [transaction]
+           (let [date-formatter (java.text.SimpleDateFormat. "yyyy-MM-dd")]
+             {:date (.format date-formatter (:date transaction))
+              :payee (:payee transaction)
+              :entries (map present-entry (:entries transaction))}))]
+    (map present-transaction transactions)))
+
+
 ; TODO: I think eventually most of this should be moved to the front end (title, subtitle do not belong here)
 (defn handle-balance
   "Handle Balance api request. Possible parameters:
@@ -115,10 +134,10 @@
                        :else (str "As of " (.format date-formatter (java.util.Date.))))]
     {:title (get params :title "Register")
      :subtitle subtitle
-     :register (query/register journal {:accounts-with accounts-with
-                                        :exclude-accounts-with exclude-accounts-with
-                                        :period-start period-start
-                                        :period-end period-end})}))
+     :register (present-register (query/register journal {:accounts-with accounts-with
+                                                          :exclude-accounts-with exclude-accounts-with
+                                                          :period-start period-start
+                                                          :period-end period-end}))}))
 
 
 
