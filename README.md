@@ -152,7 +152,7 @@ Documentation
 - [x] Networth chart hover does not work properly in Firefox
 - [ ] Move title/subtitle stuff to frontend?
 - [ ] Notification when ajax call is happening?
-- [ ] Clean up web.clj
+- [ ] Clean up web.clj (lots of duplication, stuff to be moved elsewhere?)
 - [ ] Clean up wealthpulse.js
 - [ ] Unit tests
 - [ ] Speed up parsing with instaparse?

@@ -96,6 +96,32 @@
                                                           :period-end period-end}))}))
 
 
+(defn handle-register
+  "Handle Register api request. Possible parameters:
+    accountsWith
+    excludeAccountsWith
+    period
+    since
+    upto
+    title"
+  [journal params]
+  (let [date-formatter (java.text.SimpleDateFormat. "MMMM d, yyyy")
+        [period-start period-end] (calculate-period params)
+        accounts-with (if (contains? params :accountsWith) (string/split (:accountsWith params) #" "))
+        exclude-accounts-with (if (contains? params :excludeAccountsWith) (string/split (:excludeAccountsWith params) #" "))
+        subtitle (cond (and period-start period-end) (str "For the period of " (.format date-formatter period-start) " to " (.format date-formatter period-end))
+                       (not (nil? period-start)) (str "Since " (.format date-formatter period-start))
+                       (not (nil? period-end)) (str "Up to " (.format date-formatter period-end))
+                       :else (str "As of " (.format date-formatter (java.util.Date.))))]
+    {:title (get params :title "Register")
+     :subtitle subtitle
+     :register (query/register journal {:accounts-with accounts-with
+                                        :exclude-accounts-with exclude-accounts-with
+                                        :period-start period-start
+                                        :period-end period-end})}))
+
+
+
 (defn handle-networth
   "Handle Networth api request. No possible parameters."
   [journal]
@@ -135,6 +161,7 @@
   (routes
     (GET "/nav" [] (response/response (handle-nav journal)))
     (GET "/balance" [& params] (response/response (handle-balance journal params)))
+    (GET "/register" [& params] (response/response (handle-register journal params)))
     (GET "/networth" [& params] (response/response (handle-networth journal)))))
 
 
