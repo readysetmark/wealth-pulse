@@ -22,7 +22,7 @@ Backend
 - Ring-JSON 0.2.0
 
 Frontend
-- React 0.8.0
+- React 0.9.0-rc1
 - Underscore 1.6.0
 - Backbone 1.1.1 (routing only)
 - D3 3.0.0
