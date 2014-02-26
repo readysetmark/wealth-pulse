@@ -95,8 +95,8 @@
 ; Queries
 
 (defn balance
-  "Returns a tuple of [account-balances, total-balance] that match the filters, where
-  account-balances is a vector of [account, amount] tuples, and total-balance is an amount.
+  "Returns a tuple of [account-balances total-balance] that match the filters, where
+  account-balances is a vector of {:account :amount} maps, and total-balance is an amount.
   Valid filters are:
     :accounts-with :: select entries containing any of these strings.
     :exclude-accounts-with :: filter out entries containing any of these strings.
@@ -113,8 +113,8 @@
 
 
 (defn register
-  "Returns a vector of [date description lines] that match the filters, where lines
-  is a vector of [account amount total] tuples.
+  "Returns a seq of {:date :description :lines} maps that match the filters,
+  where :lines is a vector of {:account :amount :total} maps.
   Valid filters are:
     :accounts-with :: select entries containing any of these strings.
     :exclude-accounts-with :: filter out entries containing any of these strings.
@@ -139,6 +139,28 @@
               :running-total running-total}))]
     (let [filtered-entries (filter-entries journal filters)
           grouped-entries (partition-by :header filtered-entries)
-          transactions (:transactions (reduce calc-register-lines {:transactions [] :running-total 0M} grouped-entries))
-          n transactions]
-      n)))
+          transactions (:transactions (reduce calc-register-lines {:transactions [] :running-total 0M} grouped-entries))]
+      transactions)))
+
+
+(defn outstanding-payees
+  "Returns a sorted vector of {:payee :amount} maps."
+  [journal]
+  (letfn [(calc-payee-amounts
+           [coll entry]
+           (if (or (.startsWith (:account entry) "Assets:Receivables:")
+                   (.startsWith (:account entry) "Liabilities:Payables:"))
+               (let [payee (.replace (.replace (:account entry) "Assets:Receivables:" "")
+                                     "Liabilities:Payables:"
+                                     "")
+                     total (+ (get coll payee 0M) (:amount entry))]
+                 (assoc coll payee total))
+               coll))
+          (filter-zero-amounts
+           [payee-map]
+           (reduce (fn [coll key] (if (not (bigdec= (payee-map key) 0M))
+                                      (cons {:payee key :amount (payee-map key)} coll)
+                                      coll))
+                   []
+                   (keys payee-map)))]
+    (filter-zero-amounts (reduce calc-payee-amounts {} journal))))
