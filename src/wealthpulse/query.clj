@@ -163,4 +163,4 @@
                                       coll))
                    []
                    (keys payee-map)))]
-    (filter-zero-amounts (reduce calc-payee-amounts {} journal))))
+    (sort-by :payee (filter-zero-amounts (reduce calc-payee-amounts {} journal)))))
