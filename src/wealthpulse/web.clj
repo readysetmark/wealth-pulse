@@ -166,29 +166,36 @@
 
 (defn handle-nav
   "Handle Nav api request. No possible parameters."
-  [journal]
-  {:reports [{:key "Balance Sheet" :title "Balance Sheet" :report "balance" :query "accountsWith=assets+liabilities&excludeAccountsWith=units"}
-             {:key "Net Worth" :title "Net Worth" :report "networth" :query ""}
-             {:key "Income Statement - Current Month" :title "Income Statement - Current Month" :report "balance" :query "accountsWith=income+expenses&period=this+month&title=Income+Statement"}
-             {:key "Income Statement - Previous Month" :title "Income Statement - Previous Month" :report "balance" :query "accountsWith=income+expenses&period=last+month&title=Income+Statement"}]
-   :payees []})
+  [outstanding-payees]
+  (letfn [(present-payee
+           [{:keys [payee amount]}]
+           {:payee payee
+            :command {:report "register"
+                      :query (str "accountsWith=assets%3Areceivables%3A" (string/lower-case payee) "+liabilities%3Apayables%3A" (string/lower-case payee))}
+            :amount (.format (NumberFormat/getCurrencyInstance) amount)
+            :amountClass (if (>= amount 0) "positive" "negative")})]
+    {:reports [{:key "Balance Sheet" :title "Balance Sheet" :report "balance" :query "accountsWith=assets+liabilities&excludeAccountsWith=units"}
+               {:key "Net Worth" :title "Net Worth" :report "networth" :query ""}
+               {:key "Income Statement - Current Month" :title "Income Statement - Current Month" :report "balance" :query "accountsWith=income+expenses&period=this+month&title=Income+Statement"}
+               {:key "Income Statement - Previous Month" :title "Income Statement - Previous Month" :report "balance" :query "accountsWith=income+expenses&period=last+month&title=Income+Statement"}]
+     :payees (map present-payee outstanding-payees)}))
 
 
 (defn api-routes
   "Define API routes."
-  [journal]
+  [ledger-data]
   (routes
-    (GET "/nav" [] (response/response (handle-nav journal)))
-    (GET "/balance" [& params] (response/response (handle-balance journal params)))
-    (GET "/register" [& params] (response/response (handle-register journal params)))
-    (GET "/networth" [& params] (response/response (handle-networth journal)))))
+    (GET "/nav" [] (response/response (handle-nav (:outstanding-payees ledger-data))))
+    (GET "/balance" [& params] (response/response (handle-balance (:journal ledger-data) params)))
+    (GET "/register" [& params] (response/response (handle-register (:journal ledger-data) params)))
+    (GET "/networth" [& params] (response/response (handle-networth (:journal ledger-data))))))
 
 
 (defn app-routes
   "Define application routes."
-	[journal]
+	[ledger-data]
 	(routes
-    (context "/api" [] (-> (handler/api (api-routes journal))
+    (context "/api" [] (-> (handler/api (api-routes ledger-data))
                            (json/wrap-json-body)
                            (json/wrap-json-response)))
 		(handler/site
@@ -199,5 +206,7 @@
 
 
 (def handler
-  (let [ledger-file (.get (System/getenv) "LEDGER_FILE")]
-    (app-routes (parser/parse-journal ledger-file))))
+  (let [ledger-file (.get (System/getenv) "LEDGER_FILE")
+        journal (parser/parse-journal ledger-file)
+        outstanding-payees (query/outstanding-payees journal)]
+    (app-routes {:journal journal :outstanding-payees outstanding-payees})))

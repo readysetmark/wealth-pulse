@@ -19,15 +19,18 @@ var ReportNav = React.createClass({
 
 // PayeeNav
 //   @className
-//   @url
-//   @name
+//   @payee
+//   @report
+//   @query
 //   @amountClass
 //   @amount
 var PayeeNav = React.createClass({
   render: function() {
+    var query = this.props.query.length > 0 ? "?" + this.props.query : "";
+    var url = "#/" + this.props.report + query;
     return React.DOM.li({className: this.props.className},
-                        React.DOM.a({href: this.props.url},
-                                    this.props.name,
+                        React.DOM.a({href: url},
+                                    this.props.payee,
                                     React.DOM.span({className: "pull-right " + this.props.amountClass}, this.props.amount)));
   }
 });
@@ -64,12 +67,17 @@ var NavBox = React.createClass({
     if (this.props.payees) {
       for (i = 0; i < this.props.payees.length; i++) {
         var payee = this.props.payees[i];
-        payee_nodes.push(PayeeNav({className: payee.class,
-                                 url: payee.url,
-                                 name: payee.name,
-                                 amountClass: payee.amountClass,
-                                 amount: payee.amount,
-                                 key: payee.name}));
+        var className = null;
+        if (payee.command.report === this.props.report && decodeURIComponent(payee.command.query) === this.props.query) {
+          className = "active";
+        }
+        payee_nodes.push(PayeeNav({className: className,
+                                   payee: payee.payee,
+                                   amountClass: payee.amountClass,
+                                   amount: payee.amount,
+                                   report: payee.command.report,
+                                   query: payee.command.query,
+                                   key: payee.payee}));
       }
     }
 
@@ -506,7 +514,7 @@ var WealthPulseApp = React.createClass({
       else {
         // collect values in current mode
         if (state.parameters.hasOwnProperty(state.mode)) {
-          state.parameters[state.mode].push(value);
+          state.parameters[state.mode].push(encodeURIComponent(value));
         }
         else {
           state.parameters[state.mode] = [value];

@@ -100,6 +100,7 @@ Balance Report
 
 Net Worth Chart
 - [x] Report to generate JSON data for a networth chart
+- [x] Generate "networth" chart from the command bar
 
 Single Page Web App
 - [x] Serve static files (css/js)
@@ -121,18 +122,11 @@ Register Report
 	- [x] create register report template
 	- [x] link up to command bar
 	- [x] link to from balance reports
-- [ ] Accounts Payable vs Accounts Receivable
+- [x] Accounts Payable vs Accounts Receivable
 	- Dynamically list non-zero accounts with balance in navlist. Link to register report
 
 
 ### Fourth Milestone
-
-Command Bar Enhancements
-- [ ] Add fault tolerance to parameter parsing
-- [ ] Clean up and improve date/period parsing
-	Additions for period: yyyy, last year, this year
-- [x] Generate "networth" chart from the command bar
-- [ ] Autocomplete hints (bootstrap typeahead)
 
 Setup Runnable App
 - [ ] Write main
@@ -146,15 +140,28 @@ Documentation
 
 ### Someday/Maybe
 
-- [x] Networth chart hover does not work properly in Firefox
-- [ ] Move title/subtitle stuff to frontend?
 - [ ] Notification when ajax call is happening?
+- [ ] Unit tests
+
+Bugs
+- [x] Networth chart hover does not work properly in Firefox
+
+Cleanup
+- [ ] Move title/subtitle stuff to frontend?
 - [ ] Clean up web.clj (lots of duplication, stuff to be moved elsewhere?)
 - [ ] Clean up wealthpulse.js (minimum I can factor out report title)
-- [ ] Unit tests
+
+Optimizations
 - [ ] Speed up parsing with instaparse?
 - [ ] Speed up balance query by filtering accounts first?
 - [ ] Speed up networth using custom query?
+
+Command Bar Enhancements
+- [ ] Add fault tolerance to parameter parsing
+- [ ] Clean up and improve date/period parsing
+	Additions for period: yyyy, last year, this year
+- [ ] Autocomplete hints (bootstrap typeahead)
+
 
 
 Phase 2 Implementation (Commodities)
