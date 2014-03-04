@@ -205,8 +205,13 @@
         (route/not-found "Not Found")))))
 
 
-(def handler
-  (let [ledger-file (.get (System/getenv) "LEDGER_FILE")
-        journal (parser/parse-journal ledger-file)
+(def load-journal
+  "Load journal from ledger-file-path."
+  [ledger-file-path]
+  (let [journal (parser/parse-journal ledger-file-path)
         outstanding-payees (query/outstanding-payees journal)]
-    (app-routes {:journal journal :outstanding-payees outstanding-payees})))
+    {:journal journal :outstanding-payees outstanding-payees}))
+
+(def handler
+  (let [ledger-file-path (.get (System/getenv) "LEDGER_FILE")]
+    (app-routes (load-journal ledger-file-path))))
