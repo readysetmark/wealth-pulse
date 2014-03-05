@@ -183,19 +183,19 @@
 
 (defn api-routes
   "Define API routes."
-  []
+  [app-state]
   (routes
-    (GET "/nav" [] (response/response (handle-nav (:outstanding-payees @journal/*journal*))))
-    (GET "/balance" [& params] (response/response (handle-balance (:entries @journal/*journal*) params)))
-    (GET "/register" [& params] (response/response (handle-register (:entries @journal/*journal*) params)))
-    (GET "/networth" [& params] (response/response (handle-networth (:entries @journal/*journal*))))))
+    (GET "/nav" [] (response/response (handle-nav (:outstanding-payees @app-state))))
+    (GET "/balance" [& params] (response/response (handle-balance (:journal @app-state) params)))
+    (GET "/register" [& params] (response/response (handle-register (:journal @app-state) params)))
+    (GET "/networth" [& params] (response/response (handle-networth (:journal @app-state))))))
 
 
 (defn app-routes
   "Define application routes."
-	[]
+	[app-state]
 	(routes
-    (context "/api" [] (-> (handler/api (api-routes))
+    (context "/api" [] (-> (handler/api (api-routes app-state))
                            (json/wrap-json-body)
                            (json/wrap-json-response)))
 		(handler/site
@@ -206,9 +206,10 @@
 
 
 
-; TODO: ACK! Side-effects!
 (def handler
   "Load app state and then define and return routes."
-  (do
-    (journal/load-journal (.get (System/getenv) "LEDGER_FILE"))
-    (app-routes)))
+  (let [app-state (atom (journal/->State nil nil))]
+    (do
+      (journal/load-journal app-state (.get (System/getenv) "LEDGER_FILE"))
+      (print (:outstanding-payees @app-state))
+      (app-routes app-state))))
