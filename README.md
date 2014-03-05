@@ -150,6 +150,10 @@ Cleanup
 - [ ] Move title/subtitle stuff to frontend?
 - [ ] Clean up web.clj (lots of duplication, stuff to be moved elsewhere?)
 - [ ] Clean up wealthpulse.js (minimum I can factor out report title)
+- [ ] Clean up global state. Affects:
+  - [ ] journal/load-journal
+  - [ ] web/handler
+  - [ ] web/api-routes
 
 Optimizations
 - [ ] Speed up parsing with instaparse?

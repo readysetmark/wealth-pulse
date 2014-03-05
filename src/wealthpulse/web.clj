@@ -5,7 +5,7 @@
             [compojure.route :as route]
             [ring.middleware.json :as json]
             [ring.util.response :as response]
-            [wealthpulse.parser :as parser]
+            [wealthpulse.journal :as journal]
             [wealthpulse.query :as query]
             [wealthpulse.util :as util])
   (:import [java.text NumberFormat]))
@@ -183,19 +183,19 @@
 
 (defn api-routes
   "Define API routes."
-  [ledger-data]
+  []
   (routes
-    (GET "/nav" [] (response/response (handle-nav (:outstanding-payees ledger-data))))
-    (GET "/balance" [& params] (response/response (handle-balance (:journal ledger-data) params)))
-    (GET "/register" [& params] (response/response (handle-register (:journal ledger-data) params)))
-    (GET "/networth" [& params] (response/response (handle-networth (:journal ledger-data))))))
+    (GET "/nav" [] (response/response (handle-nav (:outstanding-payees @journal/*journal*))))
+    (GET "/balance" [& params] (response/response (handle-balance (:entries @journal/*journal*) params)))
+    (GET "/register" [& params] (response/response (handle-register (:entries @journal/*journal*) params)))
+    (GET "/networth" [& params] (response/response (handle-networth (:entries @journal/*journal*))))))
 
 
 (defn app-routes
   "Define application routes."
-	[ledger-data]
+	[]
 	(routes
-    (context "/api" [] (-> (handler/api (api-routes ledger-data))
+    (context "/api" [] (-> (handler/api (api-routes))
                            (json/wrap-json-body)
                            (json/wrap-json-response)))
 		(handler/site
@@ -205,13 +205,10 @@
         (route/not-found "Not Found")))))
 
 
-(def load-journal
-  "Load journal from ledger-file-path."
-  [ledger-file-path]
-  (let [journal (parser/parse-journal ledger-file-path)
-        outstanding-payees (query/outstanding-payees journal)]
-    {:journal journal :outstanding-payees outstanding-payees}))
 
+; TODO: ACK! Side-effects!
 (def handler
-  (let [ledger-file-path (.get (System/getenv) "LEDGER_FILE")]
-    (app-routes (load-journal ledger-file-path))))
+  "Load app state and then define and return routes."
+  (do
+    (journal/load-journal (.get (System/getenv) "LEDGER_FILE"))
+    (app-routes)))
