@@ -152,7 +152,7 @@
 
 (def parse-transaction
 	"Parses a string containing a single transaction."
-	(insta/parser "src/wealthpulse/transaction.grammar"))
+	(insta/parser (clojure.java.io/resource "grammars/transaction.grammar")))
 
 
 (defn parse-journal

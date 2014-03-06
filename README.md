@@ -17,8 +17,9 @@ Dependencies
 
 Backend
 - Clojure 1.5.1
-- Instaparse 1.2.12
+- Instaparse 1.2.16
 - Compojure 1.1.6
+- Ring-Jetty-Adapter 1.2.1
 - Ring-JSON 0.2.0
 
 Frontend
@@ -34,7 +35,19 @@ Frontend
 How to Run
 ----------
 
-TBD
+Setup a ``LEDGER_FILE`` environment variable that points to your ledger file.
+
+Then run Wealth Pulse using one of the following methods.
+
+### Standalone
+
+    java -jar wealthpulse-0.1.0-SNAPSHOT-standalone.jar
+
+
+### With Source Code
+
+    lein run
+
 
 ### Development
 
@@ -129,13 +142,12 @@ Register Report
 ### Fourth Milestone
 
 Setup Runnable App
-- [ ] Write main
+- [x] Write main
 - [x] Watch ledger file and reload on change
 - [ ] Handle situation where file cannot be parsed
 
 Documentation
-- [ ] github wiki
-	- [ ] how to use / setup
+- [x] How to use / setup
 
 
 ### Someday/Maybe
