@@ -32,6 +32,12 @@ Frontend
 - Bootstrap 2.3.1
 
 
+How to Compile for Deployment
+-----------------------------
+
+    lein uberjar
+
+
 How to Run
 ----------
 
