@@ -130,8 +130,8 @@ Register Report
 
 Setup Runnable App
 - [ ] Write main
-- [ ] Watch ledger file and reload on change
-	- [ ] Handle situation where file cannot be parsed
+- [x] Watch ledger file and reload on change
+- [ ] Handle situation where file cannot be parsed
 
 Documentation
 - [ ] github wiki
