@@ -166,7 +166,7 @@
 
 (defn handle-nav
   "Handle Nav api request. No possible parameters."
-  [outstanding-payees]
+  [outstanding-payees last-modified]
   (letfn [(present-payee
            [{:keys [payee amount]}]
            {:payee payee
@@ -178,14 +178,15 @@
                {:key "Net Worth" :title "Net Worth" :report "networth" :query ""}
                {:key "Income Statement - Current Month" :title "Income Statement - Current Month" :report "balance" :query "accountsWith=income+expenses&period=this+month&title=Income+Statement"}
                {:key "Income Statement - Previous Month" :title "Income Statement - Previous Month" :report "balance" :query "accountsWith=income+expenses&period=last+month&title=Income+Statement"}]
-     :payees (map present-payee outstanding-payees)}))
+     :payees (map present-payee outstanding-payees)
+     :journalLastModified (.format (java.text.SimpleDateFormat.) last-modified)}))
 
 
 (defn api-routes
   "Define API routes."
   [app-state]
   (routes
-    (GET "/nav" [] (response/response (handle-nav (:outstanding-payees @app-state))))
+    (GET "/nav" [] (response/response (handle-nav (:outstanding-payees @app-state) (:last-modified @app-state))))
     (GET "/balance" [& params] (response/response (handle-balance (:journal @app-state) params)))
     (GET "/register" [& params] (response/response (handle-register (:journal @app-state) params)))
     (GET "/networth" [& params] (response/response (handle-networth (:journal @app-state))))))

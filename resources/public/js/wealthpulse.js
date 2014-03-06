@@ -39,6 +39,7 @@ var PayeeNav = React.createClass({
 // NavBox
 //   @reports
 //   @payees
+//   @journalLastModified
 //   @report
 //   @query
 var NavBox = React.createClass({
@@ -81,17 +82,23 @@ var NavBox = React.createClass({
       }
     }
 
-    return React.DOM.div({
-        className: "well",
-        style: {
-          padding: "8px 0"
-        }
-      },
-      React.DOM.ul({className: "nav nav-list"},
-        React.DOM.li({className: "nav-header"}, "Reports"),
-        report_nodes,
-        React.DOM.li({className: "nav-header"}, "Payables / Receivables"),
-        payee_nodes)
+    return React.DOM.div(null,
+      React.DOM.div({
+          className: "well",
+          style: {
+            padding: "8px 0"
+          }
+        },
+        React.DOM.ul({className: "nav nav-list"},
+          React.DOM.li({className: "nav-header"}, "Reports"),
+          report_nodes,
+          React.DOM.li({className: "nav-header"}, "Payables / Receivables"),
+          payee_nodes)
+      ),
+      React.DOM.small({className: "muted"},
+                      "Journal Last Modified: ",
+                      React.DOM.br(),
+                      this.props.journalLastModified)
     );
   }
 });
@@ -557,6 +564,7 @@ var WealthPulseApp = React.createClass({
     var navBox = NavBox({
       reports: this.state.navData.reports,
       payees: this.state.navData.payees,
+      journalLastModified: this.state.navData.journalLastModified,
       report: this.state.report,
       query: this.state.query
     });

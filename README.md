@@ -150,6 +150,7 @@ Cleanup
 - [ ] Move title/subtitle stuff to frontend?
 - [ ] Clean up web.clj (lots of duplication, stuff to be moved elsewhere?)
 - [ ] Clean up wealthpulse.js (minimum I can factor out report title)
+- [ ] Every time the handler is reloaded when running in dev mode, a new watcher thread is created
 
 Optimizations
 - [ ] Speed up parsing with instaparse?
