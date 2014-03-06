@@ -168,7 +168,8 @@ Cleanup
 - [ ] Move title/subtitle stuff to frontend?
 - [ ] Clean up web.clj (lots of duplication, stuff to be moved elsewhere?)
 - [ ] Clean up wealthpulse.js (minimum I can factor out report title)
-- [ ] Every time the handler is reloaded when running in dev mode, a new watcher thread is created
+- [x] Every time the handler is reloaded when running in dev mode, a new watcher thread is created
+- [ ] Do I need core.clj? I can create an uberjar with ``lein ring uberjar``
 
 Optimizations
 - [ ] Speed up parsing with instaparse?

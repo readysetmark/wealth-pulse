@@ -182,21 +182,37 @@
      :journalLastModified (.format (java.text.SimpleDateFormat.) last-modified)}))
 
 
+
+(def module-deps (atom {}))
+
+
+(defn init
+  "Load journal."
+  []
+  (let [journal-module (journal/create-journal-module)
+        ledger-file-path (.get (System/getenv) "LEDGER_FILE")]
+    (do
+      (journal/watch-and-load journal-module ledger-file-path)
+      (swap! module-deps conj [:journal-module journal-module]))))
+
+
+
 (defn api-routes
   "Define API routes."
-  [app-state]
+  []
   (routes
-    (GET "/nav" [] (response/response (handle-nav (:outstanding-payees @app-state) (:last-modified @app-state))))
-    (GET "/balance" [& params] (response/response (handle-balance (:journal @app-state) params)))
-    (GET "/register" [& params] (response/response (handle-register (:journal @app-state) params)))
-    (GET "/networth" [& params] (response/response (handle-networth (:journal @app-state))))))
+    (GET "/nav" [] (response/response (handle-nav (journal/get-outstanding-payees (:journal-module @module-deps))
+                                                  (journal/get-last-modified (:journal-module @module-deps)))))
+    (GET "/balance" [& params] (response/response (handle-balance (journal/get-entries (:journal-module @module-deps)) params)))
+    (GET "/register" [& params] (response/response (handle-register (journal/get-entries (:journal-module @module-deps)) params)))
+    (GET "/networth" [& params] (response/response (handle-networth (journal/get-entries (:journal-module @module-deps)))))))
 
 
 (defn app-routes
   "Define application routes."
-	[app-state]
+	[]
 	(routes
-    (context "/api" [] (-> (handler/api (api-routes app-state))
+    (context "/api" [] (-> (handler/api (api-routes))
                            (json/wrap-json-body)
                            (json/wrap-json-response)))
 		(handler/site
@@ -206,10 +222,4 @@
         (route/not-found "Not Found")))))
 
 
-
-(def handler
-  "Load app state and then define and return routes."
-  (let [app-state (atom (journal/->State nil nil nil))]
-    (do
-      (journal/watch-and-load app-state (.get (System/getenv) "LEDGER_FILE"))
-      (app-routes app-state))))
+(def handler (app-routes))

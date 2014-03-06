@@ -9,7 +9,8 @@
                  [ring/ring-jetty-adapter "1.2.1"]
                  [ring/ring-json "0.2.0"]]
   :plugins [[lein-ring "0.8.10"]]
-  :ring {:handler wealthpulse.web/handler}
+  :ring {:init wealthpulse.web/init
+         :handler wealthpulse.web/handler}
   :main ^:skip-aot wealthpulse.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}
