@@ -208,8 +208,7 @@
 
 (def handler
   "Load app state and then define and return routes."
-  (let [app-state (atom (journal/->State nil nil))]
+  (let [app-state (atom (journal/->State nil nil nil))]
     (do
-      (journal/load-journal app-state (.get (System/getenv) "LEDGER_FILE"))
-      (print (:outstanding-payees @app-state))
+      (journal/watch-and-load app-state (.get (System/getenv) "LEDGER_FILE"))
       (app-routes app-state))))
