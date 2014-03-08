@@ -166,7 +166,7 @@
 
 (defn handle-nav
   "Handle Nav api request. No possible parameters."
-  [outstanding-payees last-modified]
+  [outstanding-payees last-modified exception]
   (letfn [(present-payee
            [{:keys [payee amount]}]
            {:payee payee
@@ -179,7 +179,8 @@
                {:key "Income Statement - Current Month" :title "Income Statement - Current Month" :report "balance" :query "accountsWith=income+expenses&period=this+month&title=Income+Statement"}
                {:key "Income Statement - Previous Month" :title "Income Statement - Previous Month" :report "balance" :query "accountsWith=income+expenses&period=last+month&title=Income+Statement"}]
      :payees (map present-payee outstanding-payees)
-     :journalLastModified (.format (java.text.SimpleDateFormat.) last-modified)}))
+     :journalLastModified (.format (java.text.SimpleDateFormat.) last-modified)
+     :exception exception}))
 
 
 
@@ -192,7 +193,7 @@
   (let [journal-module (journal/create-journal-module)
         ledger-file-path (.get (System/getenv) "LEDGER_FILE")]
     (do
-      (journal/watch-and-load journal-module ledger-file-path)
+      (journal/watch-and-load! journal-module ledger-file-path)
       (swap! module-deps conj [:journal-module journal-module]))))
 
 
@@ -202,7 +203,8 @@
   []
   (routes
     (GET "/nav" [] (response/response (handle-nav (journal/get-outstanding-payees (:journal-module @module-deps))
-                                                  (journal/get-last-modified (:journal-module @module-deps)))))
+                                                  (journal/get-last-modified (:journal-module @module-deps))
+                                                  (journal/clear-exception! (:journal-module @module-deps)))))
     (GET "/balance" [& params] (response/response (handle-balance (journal/get-entries (:journal-module @module-deps)) params)))
     (GET "/register" [& params] (response/response (handle-register (journal/get-entries (:journal-module @module-deps)) params)))
     (GET "/networth" [& params] (response/response (handle-networth (journal/get-entries (:journal-module @module-deps)))))))

@@ -390,6 +390,30 @@ var NetworthReport = React.createClass({
 
 
 /*****
+  Exception Box
+*****/
+
+// ExceptionBox
+//   @dismiss - function
+//   @exception
+var ExceptionBox = React.createClass({
+  render: function () {
+    var display = this.props.exception ? "block" : "none";
+    var div = React.DOM.div({className: "alert alert-error",
+                             style: {display: display}},
+                            React.DOM.button({type: "button",
+                                              className: "close",
+                                              onClick: this.props.dismiss},
+                                             "\u00D7"),
+                            this.props.exception);
+
+    return div;
+  }
+});
+
+
+
+/*****
   Routes
 *****/
 
@@ -410,7 +434,7 @@ var WealthPulseRouter = Backbone.Router.extend({
 
 var WealthPulseApp = React.createClass({
   getInitialState: function() {
-    return {navData: {}, report: "", query: "", reportData: {}};
+    return {navData: {}, report: "", query: "", reportData: {}, exception: null};
   },
   componentWillMount: function () {
     var that = this;
@@ -470,11 +494,13 @@ var WealthPulseApp = React.createClass({
     $.when(this.loadNav(), this.loadReport(report, query))
       .done(function (navArgs, reportArgs) {
         //console.log("ajax done.");
+        var newException = navArgs[0].exception;
         self.setState({
           navData: navArgs[0],
           report: report,
           query: query ? query : "",
-          reportData: reportArgs[0]
+          reportData: reportArgs[0],
+          exception: newException ? newException : self.state.exception
         });
       });
   },
@@ -559,6 +585,7 @@ var WealthPulseApp = React.createClass({
   },
 
   render: function() {
+    var self = this;
     var report = null;
     var navBox = NavBox({
       reports: this.state.navData.reports,
@@ -566,6 +593,20 @@ var WealthPulseApp = React.createClass({
       journalLastModified: this.state.navData.journalLastModified,
       report: this.state.report,
       query: this.state.query
+    });
+    var exceptionBox = ExceptionBox({
+      dismiss: function () {
+        var newState = {
+          navData: self.state.navData,
+          report: self.state.report,
+          query: self.state.query,
+          reportData: self.state.reportData,
+          exception: null
+        }
+        self.setState(newState);
+        //console.log("dismissed!");
+      },
+      exception: this.state.exception
     });
 
     //console.log("will render: "+ this.state.report);
@@ -600,7 +641,9 @@ var WealthPulseApp = React.createClass({
     var body = React.DOM.div({className: "container-fluid"},
                              React.DOM.div({className: "row-fluid"},
                                            React.DOM.nav({className: "span2"}, navBox),
-                                           React.DOM.section({className: "span10"}, report)));
+                                           React.DOM.section({className: "span10"},
+                                                             exceptionBox,
+                                                             report)));
 
     return React.DOM.div({id: "app"}, header, body);
   }

@@ -15,7 +15,15 @@
 (defn get-last-modified [journal-module] (:last-modified @journal-module))
 
 
-(defn load-journal
+(defn clear-exception!
+  [journal-module]
+  (let [exception (:exception @journal-module)]
+    (when exception
+          (swap! journal-module assoc :exception nil))
+    exception))
+
+
+(defn load-journal!
   "Load journal from ledger-file-path and update journal-module."
   [journal-module ledger-file-path]
   (let [file (File. ledger-file-path)
@@ -30,10 +38,10 @@
         (do
           (println (str "Failed to load journal from: " ledger-file-path))
           (println ex)
-          (swap! journal-module assoc :last-modified last-modified :exception ex))))))
+          (swap! journal-module assoc :last-modified last-modified :exception (.getMessage ex)))))))
 
 
-(defn watch-and-load
+(defn watch-and-load!
   "Load journal from ledger-file-path and then set up a watch on the file.
   Keep reloading the file when it is modified."
   [journal-module ledger-file-path]
@@ -43,9 +51,9 @@
             (while true
                    (do
                      (if (> (.lastModified file) (:last-modified @journal-module))
-                         (load-journal journal-module ledger-file-path))
+                         (load-journal! journal-module ledger-file-path))
                      (Thread/sleep 5000)))))]
     (do
-      (load-journal journal-module ledger-file-path)
+      (load-journal! journal-module ledger-file-path)
       (.start (Thread. reload-when-modified))
       journal-module)))

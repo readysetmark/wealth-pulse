@@ -150,7 +150,7 @@ Register Report
 Setup Runnable App
 - [x] Write main
 - [x] Watch ledger file and reload on change
-- [ ] Handle situation where file cannot be parsed
+- [x] Handle situation where file cannot be parsed
 
 Documentation
 - [x] How to use / setup
@@ -164,14 +164,17 @@ Documentation
 Bugs
 - [ ] Parser should fail if there is bogus stuff in file (eg. line with "aaabbc")
   This is a consequence of using regex to pull out transactions
+- [ ] ``lein ring server`` development mode still breaks if source code changes and modules are reloaded (web/module-deps is reset)
 - [x] Networth chart hover does not work properly in Firefox
 
 Cleanup
+- [ ] Revisit parsing with instaparse. Can I get it to work without the regex?
 - [ ] Move title/subtitle stuff to frontend?
 - [ ] Clean up web.clj (lots of duplication, stuff to be moved elsewhere?)
 - [ ] Clean up wealthpulse.js (minimum I can factor out report title)
 - [x] Every time the handler is reloaded when running in dev mode, a new watcher thread is created
 - [ ] Do I need core.clj? I can create an uberjar with ``lein ring uberjar``
+- [ ] Creating lambda/closure function for dismiss for ExceptionBox isn't the best way to go about clearing the exception box
 
 Optimizations
 - [ ] Speed up parsing with instaparse?
