@@ -93,12 +93,11 @@ var NavBox = React.createClass({
           React.DOM.li({className: "nav-header"}, "Reports"),
           report_nodes,
           React.DOM.li({className: "nav-header"}, "Payables / Receivables"),
-          payee_nodes)
-      ),
-      React.DOM.small({className: "muted"},
-                      "Journal Last Modified: ",
-                      React.DOM.br(),
-                      this.props.journalLastModified)
+          payee_nodes,
+          React.DOM.li({className: "divider"}),
+          React.DOM.li({className: "nav-header"}, "Last Modified"),
+          React.DOM.li({className: "muted"}, this.props.journalLastModified))
+      )
     );
   }
 });
