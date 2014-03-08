@@ -162,6 +162,8 @@ Documentation
 - [ ] Unit tests
 
 Bugs
+- [ ] Parser should fail if there is bogus stuff in file (eg. line with "aaabbc")
+  This is a consequence of using regex to pull out transactions
 - [x] Networth chart hover does not work properly in Firefox
 
 Cleanup
