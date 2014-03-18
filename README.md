@@ -156,39 +156,6 @@ Documentation
 - [x] How to use / setup
 
 
-### Someday/Maybe
-
-- [ ] Notification when ajax call is happening?
-- [ ] Unit tests
-
-Bugs
-- [ ] Parser should fail if there is bogus stuff in file (eg. line with "aaabbc")
-  This is a consequence of using regex to pull out transactions
-- [ ] ``lein ring server`` development mode still breaks if source code changes and modules are reloaded (web/module-deps is reset)
-- [x] Networth chart hover does not work properly in Firefox
-
-Cleanup
-- [ ] Revisit parsing with instaparse. Can I get it to work without the regex?
-- [ ] Move title/subtitle stuff to frontend?
-- [ ] Clean up web.clj (lots of duplication, stuff to be moved elsewhere?)
-- [ ] Clean up wealthpulse.js (minimum I can factor out report title)
-- [x] Every time the handler is reloaded when running in dev mode, a new watcher thread is created
-- [ ] Do I need core.clj? I can create an uberjar with ``lein ring uberjar``
-- [ ] Creating lambda/closure function for dismiss for ExceptionBox isn't the best way to go about clearing the exception box
-
-Optimizations
-- [ ] Speed up parsing with instaparse?
-- [ ] Speed up balance query by filtering accounts first?
-- [ ] Speed up networth using custom query?
-
-Command Bar Enhancements
-- [ ] Add fault tolerance to parameter parsing
-- [ ] Clean up and improve date/period parsing
-	Additions for period: yyyy, last year, this year
-- [ ] Autocomplete hints (bootstrap typeahead)
-
-
-
 Phase 2 Implementation (Commodities)
 ----------------------
 
@@ -223,6 +190,40 @@ Nav
 - [ ] Configurable nav list
 - [ ] Combine reports and payables / receivables into one dict?
 - [ ] Default report?
+
+
+Someday/Maybe
+-------------
+
+Other
+- [ ] Notification when ajax call is happening?
+- [ ] Unit tests
+
+Bugs
+- [ ] Parser should fail if there is bogus stuff in file (eg. line with "aaabbc")
+  This is a consequence of using regex to pull out transactions
+- [x] Every time the handler is reloaded when running in dev mode, a new watcher thread is created
+- [ ] ``lein ring server`` development mode still breaks if source code changes and modules are reloaded (web/module-deps is reset)
+- [x] Networth chart hover does not work properly in Firefox
+
+Cleanup
+- [ ] Revisit parsing with instaparse. Can I get it to work without the regex?
+- [ ] Move title/subtitle stuff to frontend?
+- [ ] Clean up web.clj (lots of duplication, stuff to be moved elsewhere?)
+- [ ] Clean up wealthpulse.js (minimum I can factor out report title)
+- [ ] Do I need core.clj? I can create an uberjar with ``lein ring uberjar``
+- [ ] Creating lambda/closure function for dismiss for ExceptionBox isn't the best way to go about clearing the exception box
+
+Optimizations
+- [ ] Speed up parsing with instaparse?
+- [ ] Speed up balance query by filtering accounts first?
+- [ ] Speed up networth using custom query?
+
+Command Bar Enhancements
+- [ ] Add fault tolerance to parameter parsing
+- [ ] Clean up and improve date/period parsing
+	Additions for period: yyyy, last year, this year
+- [ ] Autocomplete hints (bootstrap typeahead)
 
 
 [Ledger]: http://www.ledger-cli.org/

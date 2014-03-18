@@ -1,4 +1,4 @@
-(defproject wealthpulse "0.1.0-SNAPSHOT"
+(defproject wealthpulse "0.5.0-SNAPSHOT"
   :description "Web frontend for a ledger file written in Clojure"
   :url "https://github.com/readysetmark/wealth-pulse"
   :license {:name "MIT"
