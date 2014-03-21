@@ -147,8 +147,9 @@
   (let [date-formatter (java.text.SimpleDateFormat. "dd-MMM-yyyy")
         month-formatter (java.text.SimpleDateFormat. "MMM yyyy")
         format-balance #(.format (NumberFormat/getCurrencyInstance) %)
+        num-months 26
         start-month (doto (java.util.Calendar/getInstance)
-                      (.add java.util.Calendar/MONTH -26))
+                      (.add java.util.Calendar/MONTH (- num-months)))
         add-month #(doto % (.add java.util.Calendar/MONTH 1))
         generate-period-balance (fn [calendar]
                                   (let [end-of-month (util/get-last-of-month calendar)
@@ -161,7 +162,7 @@
                                      :amount totalBalance
                                      :hover (str (.format month-formatter end-of-month) ": " (format-balance totalBalance))}))]
     {:title "Net Worth"
-     :data (map (comp generate-period-balance add-month) (repeat 25 start-month))}))
+     :data (map (comp generate-period-balance add-month) (repeat num-months start-month))}))
 
 
 (defn handle-nav
