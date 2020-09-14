@@ -29,7 +29,7 @@ commodity = quoted | unquoted
 header = date <ws> status <ws> optional-code-then-payee [note]
 <optional-code-then-payee> = code <ws> payee | !code payee
 
-date = #"\d{4}/\d{2}/\d{2}"
+date = #"\d{4}-\d{2}-\d{2}"
 status = #"[*!]"
 code = <"("> #"[^);\r\n]+" <")">
 payee = #"[^;\r\n]+"

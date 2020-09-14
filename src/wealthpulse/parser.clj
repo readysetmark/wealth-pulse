@@ -80,7 +80,7 @@
 	(let [collect-values
 			(fn [coll [key value]]
 				(cond
-					(= key :date) (assoc coll :date (.parse (java.text.SimpleDateFormat. "yyyy/MM/dd") value))
+					(= key :date) (assoc coll :date (.parse (java.text.SimpleDateFormat. "yyyy-MM-dd") value))
 					(= key :status) (assoc coll :status (if (= value \!) :uncleared :cleared))
 					(= key :code) (assoc coll :code (string/trim value))
 					(= key :payee) (assoc coll :payee (string/trim value))
